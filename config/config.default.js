@@ -1,15 +1,15 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = appInfo => {
-    const config = exports = {};
+    const config = exports = {}
 
-    config.keys = appInfo.name + '_shiyuejs';
+    config.keys = appInfo.name + '_shiyuejs'
 
 	config.static = {
 		maxAge: 3153600000,
 		prefix: '/public/',
 		dir: path.join(appInfo.baseDir, 'public')
-	};
+	}
 
     config.bodyParser = {
         ignore: [
@@ -18,7 +18,7 @@ module.exports = appInfo => {
         ],
         formLimit: '10mb',
         jsonLimit: '100kb'
-    };
+    }
 
     // 中间件添加, 顺序执行
     config.middleware = [
@@ -31,7 +31,7 @@ module.exports = appInfo => {
         'apiWapper',                // 设置响应头allow
         // 'authToken',                // token验证
         // 'rbac'                      // 权限验证
-    ];
+    ]
 
     // 包装api返回
     config.returnFactory = {
@@ -46,7 +46,7 @@ module.exports = appInfo => {
             /category/i,
             /songSheet/i
         ]
-    };
+    }
 
     // 接口权限验证api
     config.rbac = {
@@ -60,7 +60,7 @@ module.exports = appInfo => {
 	        /category/i,
 	        /songSheet/i
         ]
-    };
+    }
 
     // token验证
     config.authToken = {
@@ -73,7 +73,7 @@ module.exports = appInfo => {
 	        /category/i,
 	        /songSheet/i
         ]
-    };
+    }
 
 
     // 禁止百度爬虫
@@ -81,25 +81,26 @@ module.exports = appInfo => {
         ua: [
             /Baiduspider/i,
         ]
-    };
+    }
 
     // mongoose
     config.mongoose = {
         url: 'mongodb://127.0.0.1/analyses',
         options: {}
-    };
+    }
 
     // token
     config.token = {
         key: 'analyses.shiyuejs.top',
         expiresTime: 1 * 60 * 60 * 24   //24小时
-    };
+    }
 
     // 文件上传
 	config.upload = {
 		defaultDir: 'public/upload/'
-	};
+	}
 	
+	// csrf
 	config.security = {
 		csrf: {
 		  queryName: '_csrf', // 通过 query 传递 CSRF token 的默认字段为 _csrf
@@ -107,5 +108,10 @@ module.exports = appInfo => {
 		}
 	}
 	
-	return config;
-};
+	// app name mapping
+	config.nameMapping = {
+		YouPin: 'youpin'
+	}
+
+	return config
+}
