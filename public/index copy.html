@@ -1,0 +1,77 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf8">
+	<title>前端测试demo </title>
+	<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+<form method="POST" action="http://127.0.0.1:7001/singer/formDataAdd?_csrf=ayutiQ_v80tXhGaQ1G-ApwV4" enctype="multipart/form-data">
+	<input name="username" type="text" />
+	<input name="backend" type="file"  />
+	<input name="middle" type="file"  />
+	<input name="front" type="file"  /><!--multiple="true"-->
+	<button type="submit">Upload</button>
+</form>
+
+<!-- enctype="application/x-www-form-urlencoded"-->
+<form method="POST" action="http://127.0.0.1:7001/singer/FormUrlencodedAdd?_csrf=7ZLiS7SYELiw9gOYg32R53dL">
+	<input name="username" type="text" />
+	<button type="submit">Upload</button>
+</form>
+
+<hr>
+<div id="ajaxUpload">
+	<input name="name" type="text" class="name" placeholder="歌手名" />
+	<input name="summary" type="text" class="summary" placeholder="歌手介绍" />
+	<input name="picture" type="file" id="pictureFile" />
+	<div id="upload">Upload</div>
+</div>
+
+<script>
+
+	var pictureFile = null;
+	var ajaxUpload = function() {
+		var f = new FormData();
+		var uploadDom = $("#ajaxUpload");
+		f.append('name', uploadDom.find(".name").val());
+		f.append('summary', uploadDom.find(".summary").val());
+		f.append('picture', pictureFile);
+		$.ajax({
+			url: '/singer/add?_csrf=7ZLiS7SYELiw9gOYg32R53dL',
+			type: 'POST',
+			data: f,
+			processData: false,
+			//dataType: 'json',
+			//contentType: 'multipart/form-data',
+			//contentType: 'application/x-www-form-urlencoded',
+            //contentType: 'application/json',
+			//contentType: false,
+			xhr: function() {
+				var xhr = $.ajaxSettings.xhr();
+				if (xhr.upload) {
+					xhr.upload.addEventListener("progress", function(evt) {
+						console.log(Math.floor(100 * evt.loaded / evt.total));
+					}, false);
+					return xhr;
+				}
+			},
+			success: function (res) {
+				console.log(res);
+			},
+			error: function (res) {
+				console.log(res);
+			}
+		});
+	};
+
+	$("#ajaxUpload #pictureFile").on("change", function(e) {
+		pictureFile = this.files[0];
+	});
+
+	$("#upload").on("click", function() {
+		ajaxUpload();
+	});
+</script>
+</body>
+</html>

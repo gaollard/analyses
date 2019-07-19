@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf8">
+	<title>前端测试demo </title>
+	<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<form method="POST" action="/api/v1/error-report-add?_csrf=KV0Ka5-sy4a20VJYn-PKsX-R" enctype="multipart/form-data">
+	<input name="username" type="text" value="x12xxxx" />
+	<input name="url" type="text" value="xxx.com"  />
+	<button type="submit">添加日志</button>
+</form>
+
+<script>
+// var errorReport = function() {
+// 	$.ajax({
+// 		url: '/api/v1/error-report?_csrf=KV0Ka5-sy4a20VJYn-PKsX-R',
+// 		type: 'POST',
+// 		data: {
+// 			user_id: 'xxxxxx',
+// 			url: 'xxx.com'
+// 		},
+// 		contentType: 'application/json',
+// 		success: function (res) {
+// 			console.log(res);
+// 		},
+// 		error: function (res) {
+// 			console.log(res);
+// 		}
+// 	});
+// };
+// errorReport()
+</script>
+</body>
+</html>
