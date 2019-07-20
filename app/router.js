@@ -13,4 +13,5 @@ module.exports = app => {
 	require('./routes/songSheet')(app)
 
 	require('./routes/fe')(app)
+	require('./routes/fp')(app)
 }

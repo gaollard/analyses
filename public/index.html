@@ -36,10 +36,19 @@
 			padding: 8px 5px;
 			flex: 1;
 			text-align: center;
+			word-wrap: break-word;
+			word-break: break-all;	
 		}
 
 		.search{
-
+			/* display: flex;
+			flex-direction: column; */
+		}
+		.search .label {
+			display: inline-block;
+			width: 250px;
+			text-align: right;
+			margin-bottom: 10px;
 		}
 		input {
 			width: 150px;
@@ -47,9 +56,12 @@
 			line-height: 30px;
 			border: 1px solid #ddd;
 			border-radius: 3px;
-			margin-right: 15px;
-			margin-bottom: 10px;
+			margin-top: 10px;
 			padding-left: 10px;
+
+			flex-direction: row;
+            flex-wrap: wrap;
+			flex: 1;
 		}
 		.query{
 			cursor: pointer;
@@ -63,9 +75,14 @@
 			box-sizing: border-box;
 			display: inline-block;
 		}
-		#fe-cheart {
+		.cheart {
 			margin-top: 20px;
 			height: 300px;
+		}
+
+		.bg2{
+			background: #f0f0f0;
+			height: 20px;
 		}
 	</style>
 </head>
@@ -80,17 +97,36 @@
 <div class="layout-box" id="fe">
 	<div class="title">错误日志</div>
 	<div class="search">
-		应用名: <input name="app_name" type="text" class="search_name" value="YouPin" />
-		用户id: <input name="user_id" type="text" class="search_name" value="3" />
-		开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" />
-		结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" />
-		<span class="query" onclick="getFeList()">请求</span>
+		<div class="label">应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="3" /></div>
+		<div class="label">开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
+		<div class="label">结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+		<div class="label"><span class="query" onclick="getFeList()">请求</span></div>
 	</div>
 
 	<div id="fe-header"></div>
 	<div id="fe-content"></div>
-	<div id="fe-cheart"></div>
+	<div id="fe-cheart" class="cheart"></div>
 </div>
+
+<div class="bg2"></div>
+
+<div class="layout-box" id="fp">
+		<div class="title">资源性能</div>
+		<div class="search">
+			<div class="label">应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+			<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
+			<div class="label">开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
+			<div class="label">结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+			<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳" /></div>
+			<div class="label">节点: <input name="tab_type" type="text" class="search_name" value="ready_start" /></div>
+			<div class="label"><span class="query" onclick="getFpList()">请求</span></div>
+		</div>
+	
+		<div id="fp-header"></div>
+		<div id="fp-content"></div>
+		<div id="fp-cheart" class="cheart"></div>
+	</div>
 
 <script>
 let fe = {
@@ -105,6 +141,40 @@ let fe = {
 		stack: '错误栈',
 		file: '错误文件',
 		time: '上报时间'
+	}
+}
+
+let fp = {
+	header: document.querySelector('#fp-header'),
+	el: document.querySelector('#fp-content'),
+	chart: document.querySelector('#fp-cheart'),
+	dic: {
+		app_name: '应用名',
+		user_id: '用户id',
+		city: '城市',
+
+		ready_start: '准备新页面时间耗时',
+		redirect_time: 'redirect重定向耗时',
+		waiting_time: '请求等待耗时',
+		unload_event_time: 'unload前文档耗时',
+
+		domain_time: 'DNS查询耗时',
+		conn_time: 'TCP连接耗时',
+		req_time: 'request请求耗时',
+
+		dom_tree_time: '请求完毕至dom加载',
+		dom_ready_time: '解析dom树耗时',
+		load_event_time: 'load事件耗时',
+		load_time: '从开始至load总耗时',
+
+		format_size: '资源大小',
+		duration: '从开始至load总耗时',
+		file: '资源路径',
+
+		rs_type: '资源类型',
+		method_type: '加载方式',
+		network_type: '网络情况',
+		time: '创建时间'
 	}
 }
 
@@ -152,7 +222,7 @@ let docInner = (el, fields, data) => {
 	el.innerHTML = temp.join('');
 }
 
-let renderChart = (el, xAxis, series, title) => {
+let renderChart = (el, xAxis, series, title, name) => {
 	var myChart = echarts.init(el);
 	var option = {
 		title: {
@@ -184,7 +254,7 @@ let renderChart = (el, xAxis, series, title) => {
 			}
 		],
 		series: [{
-			name: '个数',
+			name: name || '个数',
 			type: 'bar',
 			barWidth: '60%',
 			data: series
@@ -224,8 +294,28 @@ let getFeChart = async () => {
 	renderChart(fe.chart, xAxis, series, '当前时间段统计')
 }
 
+// 获取资源性能
+let getFpList = async () => {
+	let res = await ajax('performance-report', 'GET', getFromName('#fp .search_name'))
+	docInner(fp.el, Object.keys(fp.dic), res)
+	getFpChart()
+}
+
+// 获取资源性能-图表
+let getFpChart = async () => {
+	// debugger
+	let oVal = Object.assign({}, getFromName('#fp .search_name'))
+	let res = await ajax('performance-report-chart', 'GET', oVal)
+	if (typeof res === 'string') return alert(res)
+	
+	renderChart(fp.chart, Object.keys(res), Object.values(res), '当前时间段统计', 'ms')
+}
+
 docInner(fe.header, Object.values(fe.dic))
 getFeList()
+
+docInner(fp.header, Object.values(fp.dic))
+getFpList()
 </script>
 </body>
 </html>
