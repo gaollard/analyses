@@ -44,7 +44,8 @@ module.exports = appInfo => {
             /role/i,
             /singer/i,
             /category/i,
-            /songSheet/i
+			/songSheet/i,
+			/api/
         ]
     }
 
@@ -109,9 +110,10 @@ module.exports = appInfo => {
 	}
 	
 	// app name mapping
-	config.nameMapping = {
-		YouPin: 'youpin'
-	}
+	// controller => service
+	config.appNameMapping = [
+		'YouPin'
+	]
 
 	return config
 }

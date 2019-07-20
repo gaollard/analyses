@@ -4,34 +4,228 @@
 	<meta charset="utf8">
 	<title>前端测试demo </title>
 	<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://echarts.baidu.com/dist/echarts.min.js"></script>
+	<style>
+		*{margin: 0; padding: 0; color: #333; font-size: 12px; font-family: '微软雅黑', 'Courier New', Courier, monospace;}
+		ul,li{list-style: none}
+		.layout-box{
+			width: 100%;
+			margin-bottom: 20px;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+		.title{
+			font-size: 20px; font-weight: 700;
+			margin-bottom: 20px;
+		}
+		.row-box{
+			display: flex;
+			border-right: 1px solid #ddd;
+		}
+		.header{
+			background: #f0f0f0;
+		}
+		.header .row{
+			font-weight: 700;
+			border-top: 1px solid #ddd;
+		}
+		.row{
+			border-left: 1px solid #ddd;
+			border-bottom: 1px solid #ddd;
+			line-height: 22px;
+			padding: 8px 5px;
+			flex: 1;
+			text-align: center;
+		}
+
+		.search{
+
+		}
+		input {
+			width: 150px;
+			height: 30px;
+			line-height: 30px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			margin-right: 15px;
+			margin-bottom: 10px;
+			padding-left: 10px;
+		}
+		.query{
+			cursor: pointer;
+			color: red;
+			font-size: 14px; font-weight: 700;
+			border: 1px solid red;
+			border-radius: 3px;
+			height: 30px;
+			padding: 0 10px;
+			line-height: 30px;
+			box-sizing: border-box;
+			display: inline-block;
+		}
+		#fe-cheart {
+			margin-top: 20px;
+			height: 300px;
+		}
+	</style>
 </head>
 <body>
 
-<form method="POST" action="/api/v1/error-report-add?_csrf=KV0Ka5-sy4a20VJYn-PKsX-R" enctype="multipart/form-data">
+<!-- <form method="POST" action="/api/v1/error-report-add?_csrf=CDckMAQbCTasQpoDwd9-9XAW" enctype="multipart/form-data">
 	<input name="username" type="text" value="x12xxxx" />
 	<input name="url" type="text" value="xxx.com"  />
 	<button type="submit">添加日志</button>
-</form>
+</form> -->
+
+<div class="layout-box" id="fe">
+	<div class="title">错误日志</div>
+	<div class="search">
+		应用名: <input name="app_name" type="text" class="search_name" value="YouPin" />
+		用户id: <input name="user_id" type="text" class="search_name" value="3" />
+		开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" />
+		结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" />
+		<span class="query" onclick="getFeList()">请求</span>
+	</div>
+
+	<div id="fe-header"></div>
+	<div id="fe-content"></div>
+	<div id="fe-cheart"></div>
+</div>
 
 <script>
-// var errorReport = function() {
-// 	$.ajax({
-// 		url: '/api/v1/error-report?_csrf=KV0Ka5-sy4a20VJYn-PKsX-R',
-// 		type: 'POST',
-// 		data: {
-// 			user_id: 'xxxxxx',
-// 			url: 'xxx.com'
-// 		},
-// 		contentType: 'application/json',
-// 		success: function (res) {
-// 			console.log(res);
-// 		},
-// 		error: function (res) {
-// 			console.log(res);
-// 		}
-// 	});
-// };
-// errorReport()
+let fe = {
+	header: document.querySelector('#fe-header'),
+	el: document.querySelector('#fe-content'),
+	chart: document.querySelector('#fe-cheart'),
+	dic: {
+		user_id: '用户id',
+		url: '错误url',
+		message: '错误信息',
+		line: '行号',
+		stack: '错误栈',
+		file: '错误文件',
+		time: '上报时间'
+	}
+}
+
+let ajax = (url, method, data) => {
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			url: `/api/v1/${url}?_csrf=CDckMAQbCTasQpoDwd9-9XAW`,
+			type: method || 'GET',
+			data: data,
+			dataType: 'json',
+			contentType: 'application/json',
+			success: function (res = {}) {
+				if (res.code === 0) {
+					resolve(res.data)
+				} else {
+					resolve(res.msg)
+				}
+			},
+			error: function (res) {
+				reject(res)
+			}
+		});
+	})
+}
+
+let docInner = (el, fields, data) => {
+	let temp = []
+
+	if (!data) {
+		let htmls = []
+		fields.forEach(field => {
+			htmls.push(`<div class="row">${field}</div>`)
+		})
+		temp.push(`<div class="row-box header">${htmls.join('')}</div>`)
+	} else {
+		data.forEach(item => {
+			let htmls = []
+			fields.forEach(field => {
+				htmls.push(`<div class="row">${item[field]}</div>`)
+			})
+			temp.push(`<div class="row-box">${htmls.join('')}</div>`)
+		})
+	}
+
+	el.innerHTML = temp.join('');
+}
+
+let renderChart = (el, xAxis, series, title) => {
+	var myChart = echarts.init(el);
+	var option = {
+		title: {
+			text: title || ""
+		},
+		color: ['#3398DB'],
+		tooltip: {
+			trigger: 'axis',
+			axisPointer : { 
+				type : 'shadow'
+			}
+		},
+		legend: {
+			data:[]
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: {
+			type : 'category',
+			data: xAxis
+		},
+		yAxis: [
+			{
+				type : 'value'
+			}
+		],
+		series: [{
+			name: '个数',
+			type: 'bar',
+			barWidth: '60%',
+			data: series
+		}]
+	};
+	myChart.setOption(option);
+}
+
+let getFromName = (selectName) => {
+	let list = document.querySelectorAll(selectName)
+	let oVal = {}
+	list.forEach(item => {
+		oVal[item.name] = item.value
+	})
+	return oVal;
+}
+
+let getFeList = async () => {
+	let res = await ajax('error-report', 'GET', getFromName('#fe .search_name'))
+	docInner(fe.el, Object.keys(fe.dic), res)
+	getFeChart()
+}
+
+let getFeChart = async () => {
+	let oVal = Object.assign({}, getFromName('#fe .search_name'))
+	delete oVal.user_id
+	let res = await ajax('error-report-chart', 'GET', oVal)
+	if (typeof res === 'string') return alert(res)
+
+	let xAxis = [];
+	let series = []
+	res.forEach(item => {
+		xAxis.push(item._id)
+		series.push(item.count)
+	})
+
+	renderChart(fe.chart, xAxis, series, '当前时间段统计')
+}
+
+docInner(fe.header, Object.values(fe.dic))
+getFeList()
 </script>
 </body>
 </html>

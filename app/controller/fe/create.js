@@ -6,10 +6,11 @@ class ErrorReportController extends Controller {
     async index() {
 		let ctx = this.ctx
 		let body = ctx.method === "POST" ? ctx.request.body : ctx.query
-		let serviceName = body.appName.toLocaleLowerCase()
+		let serviceName = body.app_name.toLocaleLowerCase()
+		delete body.app_name
 
         try {
-			let res = await ctx.service.fe[serviceName].create(body)
+			let res = await ctx.service.fe.index.create(body)
 			if (res) {
 				throw res
 			}
