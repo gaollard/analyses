@@ -6,11 +6,18 @@ class ErrorReportController extends Controller {
     async index() {
 		let ctx = this.ctx
 		let body = ctx.method === "POST" ? ctx.request.body : ctx.query
-		let serviceName = body.app_name.toLocaleLowerCase()
-		delete body.app_name
+		let {appNameMapping} = this.config
+		let {app_name} = body
+
+		if (!appNameMapping.includes(app_name)) {
+			return ctx.body = {
+				code: -1,
+				msg: '无效应用名'
+			}
+		}
 
         try {
-			let res = await ctx.service.fe.index.create(body)
+			let res = await ctx.service.fe.index.create(app_name, body)
 			if (res) {
 				throw res
 			}

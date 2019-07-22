@@ -4,12 +4,12 @@ const moment = require('moment')
 
 class FeService extends Service {
 	// 日志创建
-    async create(params = {}) {
+    async create(appName, params = {}) {
 		let ctx = this.ctx
 		if (!Object.keys(params).length) return '-1'
 		params.create_time = moment(new Date()).format('YYYY-MM-DD')
 		params.time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
-		let result = await ctx.model.FeYouPin.create(params)
+		let result = await ctx.model[`Fe${appName}`].create(params)
 		if (!result) return '-2'
         return null
 	}

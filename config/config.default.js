@@ -86,8 +86,10 @@ module.exports = appInfo => {
 
     // mongoose
     config.mongoose = {
-        url: 'mongodb://127.0.0.1/analyses',
-        options: {}
+        url: 'mongodb://yangshenggui:123456@127.0.0.1:27017/analyses',
+        options: {
+           useMongoClient: true
+        }
     }
 
     // token
