@@ -38,7 +38,7 @@ class FeService extends Service {
 		}, true)
 
 		// {roles: {$in: role}}, {}
-		return await ctx.model[`Fe${appName}`].find(params, projection).limit(30).sort({time: -1})
+		return await ctx.model[`Fe${appName}`].find(params, projection).sort({time: -1}).limit(30)
 	}
 	
 	// 图表查询

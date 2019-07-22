@@ -33,7 +33,7 @@ class FpService extends Service {
 			}
 		}, true)
 
-		return await ctx.model[`Fp${appName}`].find(params, projection).limit(30).sort({time: -1})
+		return await ctx.model[`Fp${appName}`].find(params, projection).sort({time: -1}).limit(30)
 	}
 	
 	// 图表查询
