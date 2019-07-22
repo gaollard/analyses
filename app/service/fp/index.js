@@ -59,12 +59,63 @@ class FpService extends Service {
 		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1})
 		if (!res.length) return {}
 
+		// [
+		// 	{
+		// 		"ready_start":10,
+		// 		"redirect_time":20,
+		// 		"waiting_time":30,
+		// 		"unload_event_time":40,
+		// 		"create_time":"2019-07-21"
+		// 	},
+		// 	{
+		// 		"ready_start":10,
+		// 		"redirect_time":3,
+		// 		"waiting_time":0,
+		// 		"unload_event_time":0,
+		// 		"create_time":"2019-07-22"
+		// 	},
+		// 	{
+		// 		"ready_start":30,
+		// 		"redirect_time":10,
+		// 		"waiting_time":6,
+		// 		"unload_event_time":8,
+		// 		"create_time":"2019-07-22"
+		// 	}
+		// ]
+
+		var o = {
+			"2019-07-21": [
+				{
+					"ready_start":10,
+					"redirect_time":3,
+					"waiting_time":0,
+					"unload_event_time":0,
+				},
+				{
+					"ready_start":30,
+					"redirect_time":10,
+					"waiting_time":6,
+					"unload_event_time":8,
+				}
+			]
+		}
 		let oVal = {}
 		for (let i = 0; i < res.length; i++) {
 			let time = res[i].create_time
-			let num = res[i][tab_type] || 0
-			oVal[time] = Number((Number(oVal[time] || "") + num).toFixed(2))
+
+			if (!oVal[time]) {
+				oVal[time] = [];
+			}
+
+			oVal[time].push(res[i])
 		}
+
+
+		// for (let i = 0; i < res.length; i++) {
+		// 	let time = res[i].create_time
+		// 	let num = res[i][tab_type] || 0
+		// 	oVal[time] = Number((Number(oVal[time] || "") + num).toFixed(2))
+		// }
 		return oVal
 		// {
 		// 	"2019-07-20": 30.23,

@@ -150,38 +150,42 @@ let fe = {
 	}
 }
 
+
+let node = {
+	ready_start: '准备新页面时间耗时',
+	redirect_time: 'redirect重定向耗时',
+	waiting_time: '请求等待耗时',
+	unload_event_time: 'unload前文档耗时',
+
+	domain_time: 'DNS查询耗时',
+	conn_time: 'TCP连接耗时',
+	req_time: 'request请求耗时',
+
+	dom_tree_time: '请求完毕至dom加载',
+	dom_ready_time: '解析dom树耗时',
+	load_event_time: 'load事件耗时',
+	load_time: '从开始至load总耗时',
+
+	duration: '从开始至load总耗时',
+}
 let fp = {
 	header: document.querySelector('#fp-header'),
 	el: document.querySelector('#fp-content'),
 	chart: document.querySelector('#fp-cheart'),
-	dic: {
+
+	dic: Object.assign({}, {
 		app_name: '应用名',
 		user_id: '用户id',
 		city: '城市',
 
-		ready_start: '准备新页面时间耗时',
-		redirect_time: 'redirect重定向耗时',
-		waiting_time: '请求等待耗时',
-		unload_event_time: 'unload前文档耗时',
-
-		domain_time: 'DNS查询耗时',
-		conn_time: 'TCP连接耗时',
-		req_time: 'request请求耗时',
-
-		dom_tree_time: '请求完毕至dom加载',
-		dom_ready_time: '解析dom树耗时',
-		load_event_time: 'load事件耗时',
-		load_time: '从开始至load总耗时',
-
 		format_size: '资源大小',
-		duration: '从开始至load总耗时',
 		file: '资源路径',
 
 		rs_type: '资源类型',
 		method_type: '加载方式',
 		network_type: '网络情况',
 		time: '创建时间'
-	}
+	}, node)
 }
 
 let ajax = (url, method, data) => {
@@ -228,7 +232,7 @@ let docInner = (el, fields, data) => {
 	el.innerHTML = temp.join('');
 }
 
-let renderChart = (el, xAxis, series, title, name) => {
+let renderChart = (el, xAxis, series, legend, title, name) => {
 	var myChart = echarts.init(el);
 	var option = {
 		title: {
@@ -241,9 +245,7 @@ let renderChart = (el, xAxis, series, title, name) => {
 				type : 'shadow'
 			}
 		},
-		legend: {
-			data:[]
-		},
+		legend: legend,
 		grid: {
 			left: '3%',
 			right: '4%',
@@ -259,12 +261,7 @@ let renderChart = (el, xAxis, series, title, name) => {
 				type : 'value'
 			}
 		],
-		series: [{
-			name: name || '个数',
-			type: 'bar',
-			barWidth: '60%',
-			data: series
-		}]
+		series: series
 	};
 	myChart.setOption(option);
 }
@@ -291,13 +288,23 @@ let getFeChart = async () => {
 	if (typeof res === 'string') return alert(res)
 
 	let xAxis = [];
-	let series = []
+	let legend = {data: []}
+
+	let seriesData = []
+	let series = [
+		{
+			name: '个数',
+			type: 'bar',
+			barWidth: '60%',
+			data: seriesData
+		}
+	]
 	res.forEach(item => {
 		xAxis.push(item._id)
-		series.push(item.count)
+		seriesData.push(item.count)
 	})
 
-	renderChart(fe.chart, xAxis, series, '当前时间段统计')
+	renderChart(fe.chart, xAxis, series, legend, '当前时间段统计')
 }
 
 // 获取资源性能
@@ -313,8 +320,21 @@ let getFpChart = async () => {
 	let oVal = Object.assign({}, getFromName('#fp .search_name'))
 	let res = await ajax('performance-report-chart', 'GET', oVal)
 	if (typeof res === 'string') return alert(res)
+
+	let legend = {
+		data: Object.keys(node)
+	}
+	let seriesData = []
+	let series = [
+		{
+			name: 'ready_start',
+			type: 'bar',
+			barWidth: '60%',
+			data: Object.values(res)
+		}
+	]
 	
-	renderChart(fp.chart, Object.keys(res), Object.values(res), '当前时间段统计', 'ms')
+	renderChart(fp.chart, Object.keys(res), series, legend, '当前时间段统计', 'ms')
 }
 
 docInner(fe.header, Object.values(fe.dic))
