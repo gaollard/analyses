@@ -17,20 +17,17 @@ class PerformanceReportController extends Controller {
 			}
 		}
 
-        try {
-			let res = await ctx.service.fp.index.create(params)
-			if (res) {
-				throw res
-			}
-            ctx.body = {
-                data: 'ok'
-            }
-        } catch (err) {
-            ctx.body = {
-                data: null,
-				code: -1,
-				message: err
-            }
+		// 获取城市维度统计
+		let ip = ctx.helper.ip(ctx.req)
+		let res = await this.app.ipToLocation(ctx, ip)
+		params.map(item => {
+			item.city = res.city || ""
+			return item
+		})
+
+		res = await ctx.service.fp.index.create(params)
+		ctx.body = {
+			data: res
 		}
     }
 }

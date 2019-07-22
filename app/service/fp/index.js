@@ -7,7 +7,6 @@ class FpService extends Service {
     async create(params = {}) {
 		let ctx = this.ctx
 		if (!Object.keys(params).length) return '-1'
-		console.log(params)
 		
 		params.map((item) => {
 			item.create_time = moment(new Date()).format('YYYY-MM-DD')
@@ -57,12 +56,8 @@ class FpService extends Service {
 			}
 		}, true)
 
-		console.log(params)
-
 		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1})
 		if (!res.length) return {}
-
-		console.log(res)
 
 		let oVal = {}
 		for (let i = 0; i < res.length; i++) {

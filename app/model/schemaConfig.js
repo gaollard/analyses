@@ -15,8 +15,8 @@ exports.fe = {
 // 资源性能上报
 exports.fp = {
 	user_id: {type: String, required: true},			// 用户id
-	ip: {type: String, required: true},					// 用户ip
-	city: {type: String, required: true},				// 城市
+	ip: {type: String, required: false},				// 用户ip
+	city: {type: String, required: false},				// 城市
 
 	ready_start: {type: Number, required: true},		// 准备新页面时间耗时
 	redirect_time: {type: Number, required: true},		// redirect重定向耗时

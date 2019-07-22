@@ -1,4 +1,5 @@
 const path = require('path')
+const domain = require('./domain')
 
 module.exports = appInfo => {
     const config = exports = {}
@@ -115,7 +116,10 @@ module.exports = appInfo => {
 	// controller => service
 	config.appNameMapping = [
 		'YouPin'
-	]
+    ]
+
+    // 第三方域名配置
+    config.domain = domain
 
 	return config
 }

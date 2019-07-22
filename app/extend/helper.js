@@ -23,7 +23,7 @@ module.exports = {
 
 	// 获取ip
 	ip(req) {
-		var clientIp = req.headers[ 'x-forwarded-for' ] ||
+		let clientIp = req.headers[ 'x-forwarded-for' ] ||
 			req.connection.remoteAddress ||
 			req.socket.remoteAddress ||
 			req.connection.socket.remoteAddress
