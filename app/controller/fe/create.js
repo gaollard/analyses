@@ -17,6 +17,7 @@ class ErrorReportController extends Controller {
 		}
 
         try {
+			body.ip = ctx.helper.ip(ctx.req)
 			let res = await ctx.service.fe.index.create(app_name, body)
 			if (res) {
 				throw res
