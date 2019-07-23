@@ -25,7 +25,7 @@ class PerformanceReportController extends Controller {
 			return item
 		})
 
-		res = await ctx.service.fp.index.create(params)
+		res = await ctx.service.fp.index.create(app_name, params)
 		ctx.body = {
 			data: res
 		}

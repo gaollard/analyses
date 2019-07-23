@@ -4,7 +4,7 @@ const moment = require('moment')
 
 class FpService extends Service {
 	// 日志创建
-    async create(params = {}) {
+    async create(appName, params = {}) {
 		let ctx = this.ctx
 		if (!Object.keys(params).length) return '-1'
 		
@@ -13,8 +13,8 @@ class FpService extends Service {
 			item.time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
 			return item
 		})
-
-		let result = await ctx.model.FpYouPin.collection.insert(params)
+		
+		let result = await ctx.model[`Fp${appName}`].collection.insert(params)
 		if (result.result.ok !== 1) return -1
         return null
 	}

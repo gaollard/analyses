@@ -7,12 +7,19 @@ class ErrorReportController extends Controller {
     async index() {
 		let ctx = this.ctx
 		let {appNameMapping} = this.config
-		let {app_name, user_id, start_time, end_time} = ctx.query
+		let {app_name, start_time, end_time} = ctx.query
 		
 		if (!appNameMapping.includes(app_name)) {
 			return ctx.body = {
 				code: -1,
 				msg: '无效应用名'
+			}
+		}
+
+		if (!start_time || !end_time) {
+			return ctx.body = {
+				code: -1,
+				msg: '时间不能为空'
 			}
 		}
 

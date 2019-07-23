@@ -42,16 +42,18 @@ class FeService extends Service {
 	}
 	
 	// 图表查询
-    async chart(appName, {start_time, end_time}) {
+    async chart(appName, {user_id, start_time, end_time}) {
 		const ctx = this.ctx
+		let params = ctx.helper.filterEmpty({
+			user_id: user_id,
+			create_time: {
+				$gte: start_time,
+				$lte: end_time
+			}
+		}, true)
 		let res = await ctx.model[`Fe${appName}`].aggregate([
 			{
-				$match: {
-					create_time: {
-						$gte: start_time,
-						$lte: end_time
-					}
-				}
+				$match: params
 			},
 			{
 				$group: {

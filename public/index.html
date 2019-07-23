@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf8">
-	<title>前端测试demo </title>
+	<title>前端日志分析</title>
 	<script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://echarts.baidu.com/dist/echarts.min.js"></script>
 	<style>
@@ -43,6 +43,17 @@
 			text-align: center;
 			word-wrap: break-word;
 			word-break: break-all;	
+		}
+		.stack{
+			cursor: pointer;
+		}
+
+		.stack-row-box{
+			max-height: 200px;
+			overflow: auto;
+		}
+		.stack-row-box .row{
+			text-align: left;
 		}
 
 		.search{
@@ -97,6 +108,9 @@
 			background: #f0f0f0;
 			height: 20px;
 		}
+		.hide{
+			display: none!important
+		}
 	</style>
 </head>
 <body>
@@ -116,7 +130,13 @@
 <div class="layout-box" id="fe">
 	<div class="title">错误日志</div>
 	<div class="search">
-		<div class="label"><span class="red">*</span>应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+		<div class="label">
+			<span class="red">*</span>应用名:
+			<select name="app_name" class="search_name">
+				<option value="YouPin">YouPin</option>
+				<option value="Test">Test</option>
+			</select>
+		</div>
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
 		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
 		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
@@ -133,7 +153,13 @@
 <div class="layout-box" id="fp">
 		<div class="title">资源性能</div>
 		<div class="search">
-			<div class="label"><span class="red">*</span>应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+			<div class="label">
+				<span class="red">*</span>应用名: 
+				<select name="app_name" class="search_name">
+					<option value="YouPin">YouPin</option>
+					<option value="Test">Test</option>
+				</select>
+			</div>
 			<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
 			<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
 			<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
@@ -163,10 +189,10 @@ let fe = {
 	dic: {
 		user_id: '用户id',
 		url: '错误url',
-		message: '错误信息',
-		line: '行号',
-		stack: '错误栈',
 		file: '错误文件',
+		line: '行号',
+		message: '错误信息',
+		stack: '错误栈',
 		time: '上报时间'
 	}
 }
@@ -239,12 +265,22 @@ let docInner = (el, fields, data) => {
 		})
 		temp.push(`<div class="row-box header">${htmls.join('')}</div>`)
 	} else {
-		data.forEach(item => {
+		typeof data === 'object' && data.forEach(item => {
 			let htmls = []
+			let more = ""
 			fields.forEach(field => {
-				htmls.push(`<div class="row">${item[field]}</div>`)
+				// 调用栈显示
+				let text = item[field]
+				if (field === 'stack') {
+					more = `<div class="row-box hide stack-row-box"><div class="row">${text}</div></div>`
+					text = text.slice(0, 20) + "..."
+				}
+				htmls.push(`<div class="row ${field}">${text}</div>`)
 			})
-			temp.push(`<div class="row-box">${htmls.join('')}</div>`)
+			temp.push(`<div class="row-box fe-click">${htmls.join('')}</div>`)
+			if (more) {
+				temp.push(more)
+			}
 		})
 	}
 
@@ -275,9 +311,11 @@ let getFeList = async () => {
 // 获取错误-图表
 let getFeChart = async () => {
 	let oVal = Object.assign({}, getFromName('#fe .search_name'))
-	delete oVal.user_id
 	let res = await ajax('error-report-chart', 'GET', oVal)
-	if (typeof res === 'string') return alert(res)
+	if (typeof res === 'string') {
+		renderChart(fe.chart)
+		return alert(res)
+	}
 
 	let xAxis = [];
 
@@ -407,6 +445,16 @@ let getFpChart = async () => {
 
 docInner(fe.header, Object.values(fe.dic))
 getFeList()
+fe.el.addEventListener('click', (evt) => {
+	if (evt.target.classList.contains('stack')) {
+		let nextElement = evt.target.parentElement.nextElementSibling
+		if (!nextElement) return;
+		if (nextElement.classList.contains('hide')) {
+			return nextElement.classList.remove('hide')
+		}
+		nextElement.classList.add('hide')
+	}
+}, false)
 
 docInner(fp.header, Object.values(fp.dic))
 getFpList()
