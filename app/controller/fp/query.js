@@ -2,7 +2,7 @@
 const Controller = require('egg').Controller
 const moment = require('moment')
 
-// 错误上报查询
+// 资源性能查询
 class ErrorReportController extends Controller {
     async index() {
 		let ctx = this.ctx
@@ -26,19 +26,12 @@ class ErrorReportController extends Controller {
 	async chart() {
 		let ctx = this.ctx
 		let {appNameMapping} = this.config
-		let {app_name, start_time, end_time, tab_type} = ctx.query
+		let {app_name, start_time, end_time} = ctx.query
 		
 		if (!appNameMapping.includes(app_name)) {
 			return ctx.body = {
 				code: -1,
 				msg: '无效应用名'
-			}
-		}
-
-		if (!tab_type) {
-			return ctx.body = {
-				code: -1,
-				msg: '节点不能为空'
 			}
 		}
 

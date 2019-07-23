@@ -8,6 +8,11 @@
 	<style>
 		*{margin: 0; padding: 0; color: #333; font-size: 12px; font-family: '微软雅黑', 'Courier New', Courier, monospace;}
 		ul,li{list-style: none}
+		.red{
+			color: #f00;
+			font-weight: 700;
+			padding-right: 3px;
+		}
 		.layout-box{
 			width: 100%;
 			margin-bottom: 20px;
@@ -63,6 +68,14 @@
             flex-wrap: wrap;
 			flex: 1;
 		}
+		select{
+			height: 30px;
+			line-height: 30px;
+			border-radius: 3px;
+			padding: 0 10px;
+			width: 160px;
+			border: 1px solid #ddd;
+		}
 		.query{
 			cursor: pointer;
 			color: red;
@@ -103,10 +116,10 @@
 <div class="layout-box" id="fe">
 	<div class="title">错误日志</div>
 	<div class="search">
-		<div class="label">应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+		<div class="label"><span class="red">*</span>应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
-		<div class="label">开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
-		<div class="label">结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
+		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
 		<div class="label"><span class="query" onclick="getFeList()">请求</span></div>
 	</div>
 
@@ -120,12 +133,20 @@
 <div class="layout-box" id="fp">
 		<div class="title">资源性能</div>
 		<div class="search">
-			<div class="label">应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
+			<div class="label"><span class="red">*</span>应用名: <input name="app_name" type="text" class="search_name" value="YouPin" /></div>
 			<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
-			<div class="label">开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
-			<div class="label">结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
-			<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳市" /></div>
-			<div class="label">节点: <input name="tab_type" type="text" class="search_name" value="ready_start" /></div>
+			<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
+			<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+			<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳市" placeholder="比如：深圳市" /></div>
+			<div class="label">资源类型: 
+				<select name="rs_type" class="search_name">
+					<option value ="">请选择</option>
+					<option value ="doc">doc</option>
+					<option value ="js">js</option>
+					<option value="css">css</option>
+				</select>
+			</div>
+			<div class="label">RTT大于时间: <input name="duration" type="text" class="search_name" value="" placeholder="毫秒数" /></div>
 			<div class="label"><span class="query" onclick="getFpList()">请求</span></div>
 		</div>
 	
@@ -150,7 +171,6 @@ let fe = {
 	}
 }
 
-
 let node = {
 	ready_start: '准备新页面时间耗时',
 	redirect_time: 'redirect重定向耗时',
@@ -165,8 +185,7 @@ let node = {
 	dom_ready_time: '解析dom树耗时',
 	load_event_time: 'load事件耗时',
 	load_time: '从开始至load总耗时',
-
-	duration: '从开始至load总耗时',
+	duration: 'RTT',
 }
 let fp = {
 	header: document.querySelector('#fp-header'),
@@ -177,15 +196,15 @@ let fp = {
 		app_name: '应用名',
 		user_id: '用户id',
 		city: '城市',
-
-		format_size: '资源大小',
-		file: '资源路径',
+		time: '创建时间',
 
 		rs_type: '资源类型',
+	}, node, {
+		format_size: '资源大小',
+		file: '资源路径',
 		method_type: '加载方式',
-		network_type: '网络情况',
-		time: '创建时间'
-	}, node)
+		network_type: '网络情况'
+	})
 }
 
 let ajax = (url, method, data) => {
@@ -232,38 +251,9 @@ let docInner = (el, fields, data) => {
 	el.innerHTML = temp.join('');
 }
 
-let renderChart = (el, xAxis, series, legend, title, name) => {
+let renderChart = (el, opt = {}) => {
 	var myChart = echarts.init(el);
-	var option = {
-		title: {
-			text: title || ""
-		},
-		color: ['#3398DB'],
-		tooltip: {
-			trigger: 'axis',
-			axisPointer : { 
-				type : 'shadow'
-			}
-		},
-		legend: legend,
-		grid: {
-			left: '3%',
-			right: '4%',
-			bottom: '3%',
-			containLabel: true
-		},
-		xAxis: {
-			type : 'category',
-			data: xAxis
-		},
-		yAxis: [
-			{
-				type : 'value'
-			}
-		],
-		series: series
-	};
-	myChart.setOption(option);
+	myChart.setOption(opt, true);
 }
 
 let getFromName = (selectName) => {
@@ -275,12 +265,14 @@ let getFromName = (selectName) => {
 	return oVal;
 }
 
+// 获取错误列表
 let getFeList = async () => {
 	let res = await ajax('error-report', 'GET', getFromName('#fe .search_name'))
 	docInner(fe.el, Object.keys(fe.dic), res)
 	getFeChart()
 }
 
+// 获取错误-图表
 let getFeChart = async () => {
 	let oVal = Object.assign({}, getFromName('#fe .search_name'))
 	delete oVal.user_id
@@ -288,14 +280,13 @@ let getFeChart = async () => {
 	if (typeof res === 'string') return alert(res)
 
 	let xAxis = [];
-	let legend = {data: []}
 
 	let seriesData = []
 	let series = [
 		{
 			name: '个数',
 			type: 'bar',
-			barWidth: '60%',
+			barWidth: '3%',
 			data: seriesData
 		}
 	]
@@ -304,10 +295,41 @@ let getFeChart = async () => {
 		seriesData.push(item.count)
 	})
 
-	renderChart(fe.chart, xAxis, series, legend, '当前时间段统计')
+	let opt = {
+		title: {
+			text: ""
+		},
+		tooltip: {
+			trigger: 'axis',
+			axisPointer : { 
+				type : 'shadow'
+			}
+		},
+		legend: {
+			data: []
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: {
+			type : 'category',
+			data : xAxis
+		},
+		yAxis: [
+			{
+				type : 'value'
+			}
+		],
+		series: series
+	};
+
+	renderChart(fe.chart, opt)
 }
 
-// 获取资源性能
+// 获取资源性能列表
 let getFpList = async () => {
 	let res = await ajax('performance-report', 'GET', getFromName('#fp .search_name'))
 	docInner(fp.el, Object.keys(fp.dic), res)
@@ -316,26 +338,72 @@ let getFpList = async () => {
 
 // 获取资源性能-图表
 let getFpChart = async () => {
-	// debugger
 	let oVal = Object.assign({}, getFromName('#fp .search_name'))
 	let res = await ajax('performance-report-chart', 'GET', oVal)
-	if (typeof res === 'string') return alert(res)
-
-	let legend = {
-		data: Object.keys(node)
+	if (typeof res === 'string') {
+		renderChart(fp.chart)
+		return alert(res)
 	}
-	let seriesData = []
-	let series = [
-		{
-			name: 'ready_start',
-			type: 'bar',
-			barWidth: '60%',
-			data: Object.values(res)
+
+	let series = []
+	var temp = {}
+	for (var i in res) {
+		for (var j in res[i]) {
+			if (!temp[j]) {
+				temp[j] = []
+			}
+
+			temp[j].push(res[i][j])
 		}
-	]
-	
-	renderChart(fp.chart, Object.keys(res), series, legend, '当前时间段统计', 'ms')
+	}
+	Object.keys(temp).forEach((item, index) => {
+		series.push({
+			name: item,
+			type: 'bar',
+			barWidth: '3%',
+			data: Object.values(temp[item])
+		})
+	})
+
+	let opt = {
+		title: {
+			text: ""
+		},
+		tooltip: {
+			trigger: 'axis',
+			axisPointer : { 
+				type : 'shadow'
+			}
+		},
+		legend: {
+			type: 'scroll',
+			right: 10,
+			top: 0,
+			bottom: 30,
+			data: Object.keys(node),
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: [
+			{
+				type : 'category',
+				data : Object.keys(res)
+			}
+		],
+		yAxis: [
+			{
+				type : 'value'
+			}
+		],
+		series: series
+	};
+	renderChart(fp.chart, opt)
 }
+
 
 docInner(fe.header, Object.values(fe.dic))
 getFeList()
