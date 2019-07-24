@@ -20,7 +20,7 @@
 	入参:
 	{
 		"app_name": "YouPin",				// 应用名
-		"user_id": "1",						// 用户id
+		"user_id": "TEST134",				// 用户id
 		"url": "xxx.com",					// 错误的url
 		"file": "2.js",						// 错误的文件
 		"line": "10:32",					// 错误行号
@@ -34,7 +34,7 @@
 	入参:
 	{
 		app_name: YouPin
-		user_id: 1
+		user_id: 'TEST134'
 		start_time: 2019-07-20
 		end_time: 2019-07-26
 	}
@@ -76,9 +76,9 @@
 		"params": [
 			{
 				"app_name": "YouPin",
-				"user_id": "2",
+				"user_id": "TEST134",
 				
-				"ready_start": 10,
+				"ready_start": 10,			// number类型
 				"redirect_time": 20,
 				"waiting_time": 30,
 				"unload_event_time": 40,
