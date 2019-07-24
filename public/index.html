@@ -206,16 +206,19 @@
 				<option value="ZiYou">自有</option>
 			</select>
 		</div>
-		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="1" /></div>
+		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="YSG123456" /></div>
 		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
 		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
 		<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳市" placeholder="比如：深圳市" /></div>
 		<div class="label">资源类型: 
 			<select name="rs_type" class="search_name">
-				<option value="">请选择</option>
+				<option value="">请选择资源类型</option>
 				<option value="doc">doc</option>
-				<option value="js">js</option>
+				<option value="script">script</option>
+				<option value="img">img</option>
 				<option value="css">css</option>
+				<option value="xmlhttprequest">xmlhttprequest</option>
+				<option value="other">other</option>
 			</select>
 		</div>
 		<div class="label">RTT大于时间: <input name="duration" type="text" class="search_name" value="" placeholder="毫秒数" /></div>
@@ -238,8 +241,11 @@
 				<select name="rs_type" class="search_name">
 					<option value="">请选择资源类型</option>
 					<option value="doc">doc</option>
-					<option value="js">js</option>
+					<option value="script">script</option>
+					<option value="img">img</option>
 					<option value="css">css</option>
+					<option value="xmlhttprequest">xmlhttprequest</option>
+					<option value="other">other</option>
 				</select>
 
 				<input name="ready_start" class="search_name" type="text" value="" placeholder="准备新页面时间耗时" />
@@ -275,17 +281,19 @@
 	<div id="fp-cheart" class="cheart"></div>
 </div>
 
-<script src="./js/analyses.js"></script>
 <script src="./js/jquery.min.js"></script>
 <script src="./js/echarts.min.js"></script>
+<script src="./js/analyses.js"></script>
 <script>
 
 ErrorReport.setConfig({
+	api: "//analyses.huishoubao.com/api/v1/error-report",
 	user_id: 'YSG123456',
 	app_name: 'ZiYou'
 })
 
-ErrorReport.setConfig({
+Performance.setConfig({
+	api: "//analyses.huishoubao.com/api/v1/performance-report",
 	user_id: 'YSG123456',
 	app_name: 'ZiYou'
 })
@@ -334,7 +342,7 @@ let fp = {
 
 		rs_type: '资源类型',
 	}, node, {
-		format_size: '资源大小',
+		format_size: '资源大小K',
 		file: '资源路径',
 		method_type: '加载方式',
 		network_type: '网络情况'
@@ -378,12 +386,23 @@ let docInner = (el, fields, data) => {
 			let more = ""
 			fields.forEach(field => {
 				// 调用栈显示
-				let text = item[field] || ""
+				let text = item[field]
+				let originText = text
 				if (field === 'stack') {
 					more = `<div class="row-box hide stack-row-box"><div class="row">${text}</div></div>`
-					text = text.slice(0, 20) + "..."
+					if (text) {
+						text = text.slice(0, 40) + "..."
+					}
 				}
-				htmls.push(`<div class="row ${field}">${text}</div>`)
+
+				// 文件路径||错误url
+				if (field === 'file' || field === 'url') {
+					if (text) {
+						text = text.slice(0, 40) + "..."
+					}
+				}
+
+				htmls.push(`<div class="row ${field}" title="${originText}">${typeof text === "undefined" ? '/' : text}</div>`)
 			})
 			temp.push(`<div class="row-box fe-click">${htmls.join('')}</div>`)
 			if (more) {
@@ -599,8 +618,6 @@ fe.el.addEventListener('click', (evt) => {
 
 docInner(fp.header, Object.values(fp.dic))
 getFpList()
-
-console.error('测试跨域错误上报')
 </script>
 </body>
 </html>

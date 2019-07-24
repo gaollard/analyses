@@ -17,8 +17,7 @@
  */
 ;(function() {
     var config = {
-        api: '//analyses.huishoubao.com/api/v1/error-report',
-        //api: '/api/v1/error-report',
+        api: '/api/v1/error-report',
         user_id: "",
         app_name: ''
     }
@@ -327,7 +326,7 @@
  */
 ;(function() {
     var config = {
-        api: '//analyses.huishoubao.com/api/v1/performance-report',
+        api: "/api/v1/performance-report",
         user_id: "",
         app_name: ''
     };
@@ -464,21 +463,24 @@
     // 解析资源
     var analysisResource = function (timing) {
         var redirectTime        = timing.redirectEnd  - timing.redirectStart;
-        var waitingTime        = timing.domainLookupStart  - timing.fetchStart;
+        var waitingTime         = timing.domainLookupStart  - timing.fetchStart;
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
         var connectTime         = timing.connectEnd - timing.connectStart;
         var requestTime         = timing.responseEnd - timing.requestStart;
         var size                = timing.transferSize || 0;
-        var duration            = timing.duration.toFixed(3);
+        var duration            = timing.duration;
 
         return {
-            redirect_time: redirectTime,
-            waiting_time: waitingTime,
-            domain_time: lookupDomainTime,
-            conn_time: connectTime,
-            req_time: requestTime,
-            duration: duration,
-            format_size: size,
+            user_id: config.user_id,
+            app_name: config.app_name,
+
+            redirect_time: Number(redirectTime.toFixed(2)),
+            waiting_time: Number(waitingTime.toFixed(2)),
+            domain_time: Number(lookupDomainTime.toFixed(2)),
+            conn_time: Number(connectTime.toFixed(2)),
+            req_time: Number(requestTime.toFixed(2)),
+            duration: Number(duration.toFixed(2)),
+            format_size: formatSize(size),
             isNew: timing.isNew
         };
     };
@@ -499,18 +501,21 @@
         var size                = timing.transferSize;
 
         return {
-            ready_start: readyStart,
-            redirect_time: redirectTime,
-            waiting_time: waitingTime,
-            unload_event_time: unloadEventTime,
-            domain_time: lookupDomainTime,
-            conn_time: connectTime,
-            req_time: requestTime,
-            domtree_time: initDomTreeTime,
-            domready_time: domReadyTime,
-            load_event_time: loadEventTime,
-            load_time: loadTime,
-            format_size: size,
+            user_id: config.user_id,
+            app_name: config.app_name,
+
+            ready_start: Number(readyStart.toFixed(2)),
+            redirect_time: Number(redirectTime.toFixed(2)),
+            waiting_time: Number(waitingTime.toFixed(2)),
+            unload_event_time: Number(unloadEventTime.toFixed(2)),
+            domain_time: Number(lookupDomainTime.toFixed(2)),
+            conn_time: Number(connectTime.toFixed(2)),
+            req_time: Number(requestTime.toFixed(2)),
+            domtree_time: Number(initDomTreeTime.toFixed(2)),
+            domready_time: Number(domReadyTime.toFixed(2)),
+            load_event_time: Number(loadEventTime.toFixed(2)),
+            load_time: Number(loadTime.toFixed(2)),
+            format_size: formatSize(size),
         }
     };
 
@@ -553,16 +558,17 @@
     };
 
     var formatSize = function (size) {
-        if (size < 1024) return size;
-        return (size / 1024).toFixed(2) + 'k';
+        //if (size < 1024) return Number(size);
+        return Number((size / 1024).toFixed(2));
     };
 
     // 发送服务端
     var toPushServer = function() {
+        var data = {
+            params: formatUploadData()
+        }
         ErrorReport.fetchTo(config.api, {
-            data: {
-                params: JSON.stringify(formatUploadData())
-            },
+            data: data,
             success: function() {
                 localStorage.setItem('performance', Date.now());
             }
@@ -585,14 +591,16 @@
     };
 
     window.addEventListener("load", function () {
-        // setTimeout(function() {
-        //     performanceInit();
-        //     upRate() && toPushServer();
-        // }, 2000);
+        setTimeout(function() {
+            performanceInit();
+            toPushServer()
+            //upRate() && toPushServer();
+        }, 20000);
     }, false);
 
     window.Performance = {
         setConfig: setConfig,
-        analysisDoc: analysisDoc
+        analysisDoc: analysisDoc,
+        analysisResource: analysisResource
     }
 })();

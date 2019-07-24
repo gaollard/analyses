@@ -20,17 +20,27 @@ class FpService extends Service {
 	}
 	
 	// 列表查询
-    async query(appName, {user_id, city, start_time, end_time, rs_type, duration = 0}) {
+    async query(appName, {user_id, city, start_time, end_time, rs_type, duration}) {
 		const ctx = this.ctx
 		let projection = {}
+
+		let durationQuery = {}
+		if (rs_type) {
+			durationQuery = {
+				$gte: Number(duration)
+			}
+		}
+		
+		// doc类别没有duration, 有loadTime
+		if (rs_type === 'doc') {
+			durationQuery = {}
+		}
 
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
 			city: city,
 			rs_type: rs_type,
-			duration: {
-				$gte: Number(duration)
-			},
+			duration: durationQuery,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time
@@ -41,7 +51,7 @@ class FpService extends Service {
 	}
 	
 	// 图表查询
-    async chart(appName, {user_id, city, start_time, end_time, rs_type, duration = 0}) {
+    async chart(appName, {user_id, city, start_time, end_time, rs_type, duration}) {
 		const ctx = this.ctx
 		let projection = {
 			ready_start: 1,
@@ -62,13 +72,24 @@ class FpService extends Service {
 			create_time: 1,
 			_id: 0
 		}
+
+		let durationQuery = {}
+		if (rs_type) {
+			durationQuery = {
+				$gte: Number(duration)
+			}
+		}
+		
+		// doc类别没有duration, 有loadTime
+		if (rs_type === 'doc') {
+			durationQuery = {}
+		}
+
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
 			city: city,
 			rs_type: rs_type,
-			duration: {
-				$gte: Number(duration)
-			},
+			duration: durationQuery,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time

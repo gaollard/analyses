@@ -2,7 +2,6 @@ module.exports = () => {
 	return async (ctx, next) => {
 		await next();
 
-		console.log(ctx.request.header, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx')
 		ctx.set("Access-Control-Allow-Origin",　"*");
 		ctx.set("Access-Control-Allow-Methods","POST, GET, PUT, DELETE, OPTIONS");
 		ctx.set("Access-Control-Allow-Credentials",false);
