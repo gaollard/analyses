@@ -352,7 +352,7 @@ let fp = {
 let ajax = (url, method, data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
-			url: `/api/v1/${url}`,
+			url: `//analyses.huishoubao.com/api/v1/${url}`,
 			type: method || 'GET',
 			data: data,
 			dataType: 'json',
@@ -618,6 +618,12 @@ fe.el.addEventListener('click', (evt) => {
 
 docInner(fp.header, Object.values(fp.dic))
 getFpList()
+
+if (Math.random() * 30 > 15) {
+	setTimeout(() => {
+		asdfasf()
+	}, 1000)
+}
 </script>
 </body>
 </html>
