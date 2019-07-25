@@ -24,6 +24,7 @@ class PerformanceReportController extends Controller {
 		params.map(item => {
 			item.city = res.city || ""
 			item.sign = sign
+			item.ip = body.ip
 			return item
 		})
 

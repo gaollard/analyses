@@ -595,7 +595,7 @@
             performanceInit();
             toPushServer()
             //upRate() && toPushServer();
-        }, 20000);
+        }, 5000);
     }, false);
 
     window.Performance = {
