@@ -15,7 +15,7 @@ class FeService extends Service {
 	}
 	
 	// 列表查询
-    async query(appName, {user_id, sign, ip, start_time, end_time}) {
+    async query(appName, {user_id, sign, ip, start_time, end_time, page_size = 10}) {
 		const ctx = this.ctx
 		let projection = {
 			'user_id': 1, 
@@ -42,7 +42,7 @@ class FeService extends Service {
 		}, true)
 
 		// {roles: {$in: role}}, {}
-		return await ctx.model[`Fe${appName}`].find(params, projection).sort({time: -1}).limit(30)
+		return await ctx.model[`Fe${appName}`].find(params, projection).sort({time: -1}).limit(Number(page_size))
 	}
 	
 	// 图表查询

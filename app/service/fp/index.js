@@ -20,7 +20,7 @@ class FpService extends Service {
 	}
 	
 	// 列表查询
-    async query(appName, {user_id, sign, ip, city, start_time, end_time, rs_type, duration}) {
+    async query(appName, {user_id, sign, ip, city, start_time, end_time, accuracy_time, rs_type, duration, page_size = 10}) {
 		const ctx = this.ctx
 		let projection = {}
 
@@ -31,7 +31,7 @@ class FpService extends Service {
 			}
 		}
 		
-		// doc类别没有duration, 有loadTime
+		// doc类别没有duration, 有loadTime, 暂不支持doc类型的duration查询
 		if (rs_type === 'doc') {
 			durationQuery = {}
 		}
@@ -43,17 +43,18 @@ class FpService extends Service {
 			city: city,
 			rs_type: rs_type,
 			duration: durationQuery,
+			time: accuracy_time,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time
 			}
 		}, true)
 
-		return await ctx.model[`Fp${appName}`].find(params, projection).sort({time: -1}).limit(30)
+		return await ctx.model[`Fp${appName}`].find(params, projection).sort({time: -1}).limit(Number(page_size))
 	}
 	
 	// 图表查询
-    async chart(appName, {user_id, sign, ip, city, start_time, end_time, rs_type, duration}) {
+    async chart(appName, {user_id, sign, ip, city, start_time, end_time, accuracy_time, rs_type, duration, page_size = 10}) {
 		const ctx = this.ctx
 		let projection = {
 			ready_start: 1,
@@ -94,13 +95,14 @@ class FpService extends Service {
 			city: city,
 			rs_type: rs_type,
 			duration: durationQuery,
+			time: accuracy_time,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time
 			}
 		}, true)
 
-		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1})
+		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1}).limit(Number(page_size))
 		if (!res.length) return {}
 
 		let o = {}

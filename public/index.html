@@ -143,6 +143,17 @@
 			margin-top: 20px;
 			text-align: center;
 		}
+		.list-content{
+			max-height: 460px;
+			border-bottom: 1px solid #ddd;
+			overflow: auto;
+		}
+		.list-content .row-box:hover{
+			background: #fafafa;
+		}
+		.list-header{
+			padding-right: 17px;
+		}
 	</style>
 </head>
 <body>
@@ -153,8 +164,8 @@
 		<div class="label">
 			<span class="red">*</span>应用名:
 			<select name="app_name" class="search_name">
-				<option value="YouPin">优品</option>
 				<option value="ZiYou">自有</option>
+				<option value="YouPin">优品</option>
 			</select>
 		</div>
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
@@ -174,8 +185,8 @@
 				<div class="add-title">添加内容</div>
 				<select name="app_name" class="search_name">
 					<option value="">--请选择--</option>
-					<option value="YouPin">优品</option>
 					<option value="ZiYou">自有</option>
+					<option value="YouPin">优品</option>
 				</select>
 				<input name="user_id" class="search_name" type="text" value="" placeholder="用户id或唯一标识" />
 				<input name="url" class="search_name" type="text" value="" placeholder="错误页面的url" />
@@ -191,8 +202,8 @@
 		</div>
 	</div>
 
-	<div id="fe-header"></div>
-	<div id="fe-content"></div>
+	<div id="fe-header" class="list-header"></div>
+	<div id="fe-content" class="list-content"></div>
 	<div id="fe-cheart" class="cheart"></div>
 </div>
 
@@ -204,8 +215,8 @@
 		<div class="label">
 			<span class="red">*</span>应用名: 
 			<select name="app_name" class="search_name">
-				<option value="YouPin">优品</option>
 				<option value="ZiYou">自有</option>
+				<option value="YouPin">优品</option>
 			</select>
 		</div>
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
@@ -213,6 +224,7 @@
 		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
 		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
 		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
+		<div class="label">精确时间: <input name="accuracy_time" type="text" class="search_name" value="" placeholder="2019-01-01 00:00:00" /></div>
 		<div class="label">城市: <input name="city" type="text" class="search_name" value="" placeholder="比如：深圳市" /></div>
 		<div class="label">资源类型: 
 			<select name="rs_type" class="search_name">
@@ -238,8 +250,8 @@
 				<div class="add-title">添加内容</div>
 				<select name="app_name" class="search_name">
 					<option value="">请选择</option>
-					<option value="YouPin">优品</option>
 					<option value="ZiYou">自有</option>
+					<option value="YouPin">优品</option>
 				</select>
 				<input name="user_id" class="search_name" type="text" value="" placeholder="用户id或唯一标识" />
 				<select name="rs_type" class="search_name">
@@ -280,8 +292,8 @@
 		</div>
 	</div>
 
-	<div id="fp-header"></div>
-	<div id="fp-content"></div>
+	<div id="fp-header" class="list-header"></div>
+	<div id="fp-content" class="list-content"></div>
 	<div id="fp-cheart" class="cheart"></div>
 </div>
 
@@ -291,7 +303,7 @@
 <script>
 let domain = '//analyses.huishoubao.com'
 if (location.port) {
-	//domain = ""
+	domain = ""
 }
 
 ErrorReport.setConfig({
@@ -362,6 +374,19 @@ let fp = {
 	})
 }
 
+let debounce = (fn, delay = 300) => {
+	let timerId
+	return (...args) => {
+		if (timerId) {
+			clearTimeout(timerId)
+		}
+		timerId = setTimeout(() => {
+			fn(...args)
+			timerId = null
+		}, delay)
+	}
+}
+
 let times = (now) => {
 	let time = new Date(), day,
 		timeFormat = (num) => {
@@ -395,7 +420,7 @@ let ajax = (url, method, data) => {
 			error: function (res) {
 				reject(res)
 			}
-		});
+		})
 	})
 }
 
@@ -439,21 +464,23 @@ let docInner = (el, fields, data) => {
 		})
 	}
 
-	el.innerHTML = temp.join('');
+	el.innerHTML = temp.join('')
 }
 
 let renderChart = (el, opt = {}) => {
-	var myChart = echarts.init(el);
-	myChart.setOption(opt, true);
+	var myChart = echarts.init(el)
+	myChart.setOption(opt, true)
 }
 
 let getFromName = (selectName) => {
 	let list = document.querySelectorAll(selectName)
-	let oVal = {}
+	let oVal = {
+		page_size: 100
+	}
 	list.forEach(item => {
 		oVal[item.name] = item.value
 	})
-	return oVal;
+	return oVal
 }
 
 // 提交错误日志
@@ -479,7 +506,7 @@ let getFeChart = async () => {
 		return alert(res)
 	}
 
-	let xAxis = [];
+	let xAxis = []
 
 	let seriesData = []
 	let series = [
@@ -524,7 +551,7 @@ let getFeChart = async () => {
 			}
 		],
 		series: series
-	};
+	}
 
 	renderChart(fe.chart, opt)
 }
@@ -618,7 +645,7 @@ let getFpChart = async () => {
 			}
 		],
 		series: series
-	};
+	}
 	renderChart(fp.chart, opt)
 }
 
@@ -640,10 +667,11 @@ let init = () => {
 
 	docInner(fe.header, Object.values(fe.dic))
 	getFeList()
+
 	fe.el.addEventListener('click', (evt) => {
 		if (evt.target.classList.contains('stack')) {
 			let nextElement = evt.target.parentElement.nextElementSibling
-			if (!nextElement) return;
+			if (!nextElement) return
 			if (nextElement.classList.contains('hide')) {
 				return nextElement.classList.remove('hide')
 			}
