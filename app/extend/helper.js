@@ -23,11 +23,17 @@ module.exports = {
 
 	// 获取ip
 	ip(req) {
-		let clientIp = req.headers[ 'x-forwarded-for' ] ||
+		let ip = req.headers[ 'x-forwarded-for' ] ||
 			req.connection.remoteAddress ||
 			req.socket.remoteAddress ||
 			req.connection.socket.remoteAddress
-		return clientIp
+
+		// 本地ip
+		if (ip.indexOf('::ffff') > -1) {
+			ip = ip.slice(7)
+		}
+
+		return ip
 	},
 
 	// 过滤空参数{ null, undefined, '' }

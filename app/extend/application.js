@@ -8,22 +8,29 @@ module.exports = {
 	async ipToLocation(ctx, ip = '') {
 		let {domain} = this.config
 		let url = `${domain.ip}ip=${ip}`
-		let res = await ctx.curl(url, {
-			method: 'GET',
-			dataType: 'json',
-		})
+		let res = {}
+		try {
+			res = await ctx.curl(url, {
+				method: 'GET',
+				dataType: 'json',
+				timeout: 5000		// 5s + 5s超时
+			})
 
-		if (res.data.status === 0) {
-			let {result = {}} = res.data
-			return {
-				city: result.ad_info.city,
-				result: result
+			if (res.data.status === 0) {
+				let {result = {}} = res.data
+				return {
+					city: result.ad_info.city,
+					result: result
+				}
+			} else {
+				ctx.logger.error(res.data)
 			}
+		} catch (err) {
+			ctx.logger.error(res)
+			ctx.logger.error(err)
 		}
 
-		// 错误
-		ctx.logger.error(res.data)
-		return res.data
+		return {}
 	},
 
 	// 创建token
@@ -48,13 +55,11 @@ module.exports = {
 				req: ctx
 			})
 
-			let resStore = await ctx.service.token.create({
-				app_name: body.app_name,
-				sign: resSign.sign,
-				token: resSign.token
-			})
+			resSign.app_name = body.app_name
+			let resStore = await ctx.service.token.create(resSign)
 
-			if (!resStore) {
+			console.log('resStore', resStore)
+			if (resStore) {
 				ctx.cookies.set('token', resSign.sign)
 			} else {
 				ctx.logger.error(resStore)

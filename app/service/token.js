@@ -24,8 +24,7 @@ class TokenService extends Service {
 		if (!Object.keys(params).length) return '-1'
         params.time = moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
 		let result = await ctx.model.Token.create(params)
-		if (!result) return '-2'
-        return null
+        return result
 	}
 }
 
