@@ -18,10 +18,12 @@ class PerformanceReportController extends Controller {
 		}
 
 		// 获取城市维度统计
-		let ip = ctx.helper.ip(ctx.req)
-		let res = await this.app.ipToLocation(ctx, ip)
+		body.ip = ctx.helper.ip(ctx.req)
+		let res = await this.app.ipToLocation(ctx, body.ip)
+		let sign = await this.app.createToken(ctx, body)
 		params.map(item => {
 			item.city = res.city || ""
+			item.sign = sign
 			return item
 		})
 

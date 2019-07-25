@@ -15,11 +15,12 @@ class FeService extends Service {
 	}
 	
 	// 列表查询
-    async query(appName, {user_id, start_time, end_time}) {
+    async query(appName, {user_id, sign, ip, start_time, end_time}) {
 		const ctx = this.ctx
 		let projection = {
 			'user_id': 1, 
-			'city': 1, 
+			'ip': 1,
+			'sign': 1,
 			'url': 1, 
 			'file': 1, 
 			'line': 1, 
@@ -31,6 +32,8 @@ class FeService extends Service {
 
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
+			sign: sign,
+			ip: ip,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time
@@ -42,10 +45,12 @@ class FeService extends Service {
 	}
 	
 	// 图表查询
-    async chart(appName, {user_id, start_time, end_time}) {
+    async chart(appName, {user_id, sign, ip, start_time, end_time}) {
 		const ctx = this.ctx
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
+			sign: sign,
+			ip: ip,
 			create_time: {
 				$gte: start_time,
 				$lte: end_time

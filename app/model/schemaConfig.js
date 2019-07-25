@@ -1,7 +1,8 @@
 
 // 错误上报
 exports.fe = {
-	user_id: {type: String, required: false}, 				// 用户id
+	user_id: {type: String, required: false}, 				// 用户id，接入方上报, 基本上是缺失值
+	sign: {type: String, required: false, index: true},		// 用户签名, 系统生成
 	ip: {type: String, required: false},					// 用户ip
 	url: {type: String, required: false},					// 错误页面的url
 	file: {type: String, required: false},					// 错误文件的url
@@ -14,7 +15,8 @@ exports.fe = {
 
 // 资源性能上报
 exports.fp = {
-	user_id: {type: String, required: false}, 				// 用户id
+	user_id: {type: String, required: false}, 				// 用户id，接入方上报, 基本上是缺失值
+	sign: {type: String, required: false, index: true},		// 用户签名, 系统生成
 	ip: {type: String, required: false},					// 用户ip
 	city: {type: String, required: false},					// 城市
 

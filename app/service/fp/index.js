@@ -20,7 +20,7 @@ class FpService extends Service {
 	}
 	
 	// 列表查询
-    async query(appName, {user_id, city, start_time, end_time, rs_type, duration}) {
+    async query(appName, {user_id, sign, ip, city, start_time, end_time, rs_type, duration}) {
 		const ctx = this.ctx
 		let projection = {}
 
@@ -38,6 +38,8 @@ class FpService extends Service {
 
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
+			sign: sign,
+			ip: ip,
 			city: city,
 			rs_type: rs_type,
 			duration: durationQuery,
@@ -51,7 +53,7 @@ class FpService extends Service {
 	}
 	
 	// 图表查询
-    async chart(appName, {user_id, city, start_time, end_time, rs_type, duration}) {
+    async chart(appName, {user_id, sign, ip, city, start_time, end_time, rs_type, duration}) {
 		const ctx = this.ctx
 		let projection = {
 			ready_start: 1,
@@ -87,6 +89,8 @@ class FpService extends Service {
 
 		let params = ctx.helper.filterEmpty({
 			user_id: user_id,
+			sign: sign,
+			ip: ip,
 			city: city,
 			rs_type: rs_type,
 			duration: durationQuery,

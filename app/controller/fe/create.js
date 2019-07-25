@@ -16,21 +16,13 @@ class ErrorReportController extends Controller {
 			}
 		}
 
-        try {
-			body.ip = ctx.helper.ip(ctx.req)
-			let res = await ctx.service.fe.index.create(app_name, body)
-			if (res) {
-				throw res
-			}
-            ctx.body = {
-                data: 'ok'
-            }
-        } catch (err) {
-            ctx.body = {
-                data: null,
-				code: -1,
-				message: err
-            }
+		body.ip = ctx.helper.ip(ctx.req)
+		let sign = await this.app.createToken(ctx, body)
+		body.sign = sign
+		
+		let res = await ctx.service.fe.index.create(app_name, body)
+		ctx.body = {
+			data: res
 		}
     }
 }

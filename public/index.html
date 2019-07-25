@@ -157,9 +157,11 @@
 				<option value="ZiYou">自有</option>
 			</select>
 		</div>
-		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="YSG123456" /></div>
-		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
-		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
+		<div class="label">用户ip: <input name="ip" type="text" class="search_name" value="" placeholder="用户ip" /></div>
+		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
+		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20" placeholder="开始时间:2019-07-20" /></div>
+		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
 		<div class="label">
 			<span class="query" onclick="getFeList()">查询</span>&nbsp;
 			<span class="query cancel" onclick="openCraetePop('#fe')">创建</span>
@@ -206,9 +208,11 @@
 				<option value="ZiYou">自有</option>
 			</select>
 		</div>
-		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="YSG123456" /></div>
-		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name" value="2019-07-20" /></div>
-		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name" value="2019-07-26" /></div>
+		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
+		<div class="label">用户ip: <input name="ip" type="text" class="search_name" value="" placeholder="用户ip" /></div>
+		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
+		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
+		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
 		<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳市" placeholder="比如：深圳市" /></div>
 		<div class="label">资源类型: 
 			<select name="rs_type" class="search_name">
@@ -285,18 +289,22 @@
 <script src="./js/echarts.min.js"></script>
 <script src="./js/analyses.js"></script>
 <script>
+let domain = '//analyses.huishoubao.com'
+if (location.port) {
+	domain = ""
+}
 
 ErrorReport.setConfig({
-	api: "//analyses.huishoubao.com/api/v1/error-report",
-	user_id: 'YSG123456',
+	api: `${domain}/api/v1/error-report`,
+	user_id: '',
+	app_name: 'ZiYou'
+})
+Performance.setConfig({
+	api: `${domain}/api/v1/performance-report`,
+	user_id: '',
 	app_name: 'ZiYou'
 })
 
-Performance.setConfig({
-	api: "//analyses.huishoubao.com/api/v1/performance-report",
-	user_id: 'YSG123456',
-	app_name: 'ZiYou'
-})
 
 let fe = {
 	header: document.querySelector('#fe-header'),
@@ -304,6 +312,8 @@ let fe = {
 	chart: document.querySelector('#fe-cheart'),
 	dic: {
 		user_id: '用户id',
+		ip: '用户ip',
+		sign: 'sign',
 		url: '错误url',
 		file: '错误文件',
 		line: '行号',
@@ -349,10 +359,25 @@ let fp = {
 	})
 }
 
+let times = (now) => {
+	let time = new Date(), day,
+		timeFormat = (num) => {
+			if (num < 10) return "0" + num
+			return num
+		}
+
+	if (now) time = new Date(now)
+	day = time.getFullYear() + "-" + timeFormat(time.getMonth() + 1) + "-" + timeFormat(time.getDate())
+
+	return {
+		day: day
+	}
+}
+
 let ajax = (url, method, data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
-			url: `//analyses.huishoubao.com/api/v1/${url}`,
+			url: `${domain}/api/v1/${url}`,
 			type: method || 'GET',
 			data: data,
 			dataType: 'json',
@@ -603,27 +628,37 @@ let openCraetePop = (el) => {
 	formBox.classList.add('hide')
 }
 
-docInner(fe.header, Object.values(fe.dic))
-getFeList()
-fe.el.addEventListener('click', (evt) => {
-	if (evt.target.classList.contains('stack')) {
-		let nextElement = evt.target.parentElement.nextElementSibling
-		if (!nextElement) return;
-		if (nextElement.classList.contains('hide')) {
-			return nextElement.classList.remove('hide')
+let init = () => {
+	let timeDayEnd = document.querySelectorAll('.time_day_end')
+	timeDayEnd.forEach(item => item.value = times().day)
+
+	let timeDayStart = document.querySelectorAll('.time_day_start')
+	timeDayStart.forEach(item => item.value = times(Date.now() - 1000 * 60 * 60 * 24 * 7).day)
+
+	docInner(fe.header, Object.values(fe.dic))
+	getFeList()
+	fe.el.addEventListener('click', (evt) => {
+		if (evt.target.classList.contains('stack')) {
+			let nextElement = evt.target.parentElement.nextElementSibling
+			if (!nextElement) return;
+			if (nextElement.classList.contains('hide')) {
+				return nextElement.classList.remove('hide')
+			}
+			nextElement.classList.add('hide')
 		}
-		nextElement.classList.add('hide')
+	}, false)
+
+	docInner(fp.header, Object.values(fp.dic))
+	getFpList()
+
+	if (Math.random() * 30 > 22) {
+		setTimeout(() => {
+			asdfasf()
+		}, 1000)
 	}
-}, false)
-
-docInner(fp.header, Object.values(fp.dic))
-getFpList()
-
-if (Math.random() * 30 > 15) {
-	setTimeout(() => {
-		asdfasf()
-	}, 1000)
 }
+
+init()
 </script>
 </body>
 </html>
