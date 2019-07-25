@@ -100,7 +100,6 @@ class FpService extends Service {
 			}
 		}, true)
 
-		console.log(params)
 		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1})
 		if (!res.length) return {}
 

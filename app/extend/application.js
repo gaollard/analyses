@@ -42,7 +42,7 @@ module.exports = {
 			resSign = await ctx.generateSign({
 				payload: {
 					random: ctx.helper.mathId(),
-					ip:　body.ip,
+					ip: body.ip,
 					app_name: body.app_name
 				},
 				req: ctx

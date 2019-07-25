@@ -7,8 +7,15 @@ class PerformanceReportController extends Controller {
 		let ctx = this.ctx
 		let body = ctx.method === "POST" ? ctx.request.body : ctx.query
 		let {appNameMapping} = this.config
-
 		let params = body.params || []
+
+		if (!params.length) {
+			return ctx.body = {
+				code: -1,
+				msg: '资源不能为空'
+			}
+		}
+
 		let app_name = params[0].app_name
 		if (!appNameMapping.includes(app_name)) {
 			return ctx.body = {
@@ -17,14 +24,18 @@ class PerformanceReportController extends Controller {
 			}
 		}
 
+		let oValues = {
+			ip: ctx.helper.ip(ctx.req),
+			app_name: app_name
+		}
+
 		// 获取城市维度统计
-		body.ip = ctx.helper.ip(ctx.req)
-		let res = await this.app.ipToLocation(ctx, body.ip)
-		let sign = await this.app.createToken(ctx, body)
+		let res = await this.app.ipToLocation(ctx, oValues.ip)
+		let sign = await this.app.createToken(ctx, oValues)
 		params.map(item => {
 			item.city = res.city || ""
 			item.sign = sign
-			item.ip = body.ip
+			item.ip = oValues.ip
 			return item
 		})
 
