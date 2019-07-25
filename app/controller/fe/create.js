@@ -16,6 +16,7 @@ class ErrorReportController extends Controller {
 			}
 		}
 
+		body.user_agent = ctx.userAgent
 		body.ip = ctx.helper.ip(ctx.req)
 		let sign = await this.app.createToken(ctx, body)
 		body.sign = sign

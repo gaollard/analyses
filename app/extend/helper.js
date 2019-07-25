@@ -27,7 +27,7 @@ module.exports = {
 			req.connection.remoteAddress ||
 			req.socket.remoteAddress ||
 			req.connection.socket.remoteAddress
-		return clientIp.slice(7)
+		return clientIp
 	},
 
 	// 过滤空参数{ null, undefined, '' }

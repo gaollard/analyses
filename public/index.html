@@ -213,7 +213,7 @@
 		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
 		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
 		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
-		<div class="label">城市: <input name="city" type="text" class="search_name" value="深圳市" placeholder="比如：深圳市" /></div>
+		<div class="label">城市: <input name="city" type="text" class="search_name" value="" placeholder="比如：深圳市" /></div>
 		<div class="label">资源类型: 
 			<select name="rs_type" class="search_name">
 				<option value="">请选择资源类型</option>
@@ -319,7 +319,8 @@ let fe = {
 		line: '行号',
 		message: '错误信息',
 		stack: '错误栈',
-		time: '上报时间'
+		time: '上报时间',
+		user_agent: 'userAgent'
 	}
 }
 
@@ -348,6 +349,8 @@ let fp = {
 		app_name: '应用名',
 		user_id: '用户id',
 		city: '城市',
+		ip: '用户ip',
+		sign: 'sign',
 		time: '创建时间',
 
 		rs_type: '资源类型',
@@ -421,7 +424,7 @@ let docInner = (el, fields, data) => {
 				}
 
 				// 文件路径||错误url
-				if (field === 'file' || field === 'url') {
+				if (['file', 'url', 'user_agent'].includes(field)) {
 					if (text) {
 						text = text.slice(0, 40) + "..."
 					}

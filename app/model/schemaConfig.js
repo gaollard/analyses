@@ -11,6 +11,7 @@ exports.fe = {
 	stack: {type: String, required: false},					// 错误调用栈
 	create_time: {type: String, required: true},			// 上报时间 图表 精确到天
 	time: {type: String, required: true},					// 上报时间 列表查询
+	user_agent: {type: String, required: true},				// 浏览器user_agent
 }
 
 // 资源性能上报

@@ -6,6 +6,10 @@ module.exports = {
 		return iosReg.test(this.get('user-agent'));
 	},
 
+	get userAgent() {
+		return this.get('user-agent')
+	},
+
 	async he(options) {
 		let that = this;
 		return new Promise((resolve, reject) => {

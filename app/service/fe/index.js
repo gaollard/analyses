@@ -27,6 +27,7 @@ class FeService extends Service {
 			'message': 1, 
 			'stack':1, 
 			'time': 1, 
+			'user_agent': 1,
 			'_id': 0
 		}
 
