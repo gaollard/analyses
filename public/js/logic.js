@@ -176,7 +176,7 @@ let renderChart = (el, opt = {}) => {
 let getFromName = (selectName) => {
 	let list = document.querySelectorAll(selectName)
 	let oVal = {
-		page_size: 100
+		page_size: 300
 	}
 	list.forEach(item => {
 		oVal[item.name] = item.value
