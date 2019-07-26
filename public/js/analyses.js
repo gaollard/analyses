@@ -330,6 +330,9 @@
 /**
  * @method Performance
  * @description  TTFB、TTSR、TTDC、TTFL 性能检测
+ * 
+ *  // https://segmentfault.com/a/1190000002589116
+ *  // https://www.w3.org/TR/navigation-timing/
  */
 ;(function() {
     var config = {
@@ -351,8 +354,8 @@
         connectTime: 'TCP连接耗时',
         requestTime: 'request请求耗时',
         responseTime: 'response响应耗时',
-        initDomTreeTime: '请求完毕至dom加载',
-        domReadyTime: '解析dom树耗时',
+        initDomTreeTime: 'dom解析构建耗时',
+        domReadyTime: '准备就绪耗时',
         loadEventTime: 'load事件耗时',
         loadTime: '从开始至load总耗时',
         formatSize: '资源大小',
@@ -500,8 +503,8 @@
     // 解析
     var analysisDoc = function (timing) {
         var readyStart          = timing.fetchStart - timing.navigationStart;
-        var redirectTime        = timing.redirectEnd  - timing.redirectStart;
-        var waitingTime         = timing.domainLookupStart  - timing.fetchStart;    // 负数表示阻塞时长
+        var redirectTime        = timing.redirectEnd - timing.redirectStart;
+        var waitingTime         = timing.domainLookupStart - timing.fetchStart;    // 负数表示延迟或者阻塞时长
         var unloadEventTime     = timing.unloadEventEnd - timing.unloadEventStart;
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
 
@@ -509,8 +512,8 @@
         var requestTime         = timing.responseStart - timing.requestStart;
         var responseTime        = timing.responseEnd - timing.responseStart;
 
-        var initDomTreeTime     = timing.domInteractive - timing.responseEnd;
-        var domReadyTime        = timing.domComplete - timing.domInteractive;       // 过早获取时,domComplete有时会是0
+        var initDomTreeTime     = timing.domInteractive - timing.responseEnd;       // 表示完成全部html的解析, 并且dom构建完毕, domLoading-responseEnd表示开始解析第一批收到的HTML文档的字节
+        var domReadyTime        = timing.domComplete - timing.domInteractive;       // 过早获取时,domComplete有时会是0, 表示所有的处理都已完成并且所有的附属资源都已经下载完毕
         var loadEventTime       = timing.loadEventEnd - timing.loadEventStart;
         var loadTime            = timing.loadEventEnd - timing.navigationStart;     // 过早获取时,loadEventEnd有时会是0
         var size                = timing.transferSize;
