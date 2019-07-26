@@ -1,0 +1,111 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf8">
+	<title>前端日志分析</title>
+	<link rel="stylesheet" href="./css/css.css" >
+</head>
+<body>
+<div class="tab-title">
+	<a href="index.html" class="title">错误日志</a>
+	<a href="performance.html" class="title on">资源性能</a>
+</div>
+
+<div class="layout-box" id="fp">
+	<div class="search">
+		<div class="label">
+			<span class="red">*</span>应用名: 
+			<select name="app_name" class="search_name">
+				<option value="ZiYou">自有</option>
+				<option value="YouPin">优品</option>
+			</select>
+		</div>
+		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
+		<div class="label">用户ip: <input name="ip" type="text" class="search_name" value="" placeholder="用户ip" /></div>
+		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
+		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
+		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
+		<div class="label">精确时间: <input name="accuracy_time" type="text" class="search_name" value="" placeholder="2019-01-01 00:00:00" /></div>
+		<div class="label">城市: <input name="city" type="text" class="search_name" value="" placeholder="比如：深圳市" /></div>
+		<div class="label">资源类型: 
+			<select name="rs_type" class="search_name">
+				<option value="">请选择资源类型</option>
+				<option value="doc">doc</option>
+				<option value="script">script</option>
+				<option value="img">img</option>
+				<option value="css">css</option>
+				<option value="xmlhttprequest">xmlhttprequest</option>
+				<option value="other">other</option>
+			</select>
+		</div>
+		<div class="label">RTT大于时间: <input name="duration" type="text" class="search_name" value="" placeholder="毫秒数" /></div>
+		<div class="label">
+			<span class="query" onclick="getFpList()">查询</span>&nbsp;
+			<span class="query cancel" onclick="openCraetePop('#fp')">创建</span>
+		</div>
+	</div>
+
+	<div class="form-box hide">
+		<div>
+			<div class="content">
+				<div class="add-title">添加内容</div>
+				<select name="app_name" class="search_name">
+					<option value="">请选择</option>
+					<option value="ZiYou">自有</option>
+					<option value="YouPin">优品</option>
+				</select>
+				<input name="user_id" class="search_name" type="text" value="" placeholder="用户id或唯一标识" />
+				<select name="rs_type" class="search_name">
+					<option value="">请选择资源类型</option>
+					<option value="doc">doc</option>
+					<option value="script">script</option>
+					<option value="img">img</option>
+					<option value="css">css</option>
+					<option value="xmlhttprequest">xmlhttprequest</option>
+					<option value="other">other</option>
+				</select>
+
+				<input name="ready_start" class="search_name" type="text" value="" placeholder="准备新页面时间耗时" />
+				<input name="redirect_time" class="search_name" type="text" value="" placeholder="redirect重定向耗时" />
+				<input name="waiting_time" class="search_name" type="text" value="" placeholder="请求等待耗时" />
+				<input name="unload_event_time" class="search_name" type="text" value="" placeholder="unload前文档耗时" />
+
+				<input name="domain_time" class="search_name" type="text" value="" placeholder="DNS查询耗时" />
+				<input name="conn_time" class="search_name" type="text" value="" placeholder="TCP连接耗时" />
+				<input name="req_time" class="search_name" type="text" value="" placeholder="request请求耗时" />
+				<input name="res_time" class="search_name" type="text" value="" placeholder="response耗时" />
+
+				<input name="dom_tree_time" class="search_name" type="text" value="" placeholder="请求完毕至dom加载" />
+				<input name="dom_ready_time" class="search_name" type="text" value="" placeholder="解析dom树耗时" />
+				<input name="load_event_time" class="search_name" type="text" value="" placeholder="load事件耗时" />
+				<input name="load_time" class="search_name" type="text" value="" placeholder="从开始至load总耗时" />
+				<input name="duration" class="search_name" type="text" value="" placeholder="RTT" />
+
+				<input name="format_size" class="search_name" type="text" value="" placeholder="资源大小" />
+				<input name="file" class="search_name" type="text" value="" placeholder="资源路径" />
+				<input name="method_type" class="search_name" type="text" value="" placeholder="加载方式" />
+				<input name="network_type" class="search_name" type="text" value="" placeholder="网络情况,3g,4g,wifi,未知" />
+
+				<div class="label">
+					<span class="query" onclick="createPerformanceReport()">确定</span>&nbsp;
+					<span class="query cancel" onclick="openCraetePop('#fp')">取消</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="fp-cheart" class="cheart"></div>
+	<div class="total"></div>
+	<div id="fp-header" class="list-header"></div>
+	<div id="fp-content" class="list-content"></div>
+</div>
+
+<script src="./js/jquery.min.js"></script>
+<script src="./js/echarts.min.js"></script>
+<script src="./js/analyses.js"></script>
+<script src="./js/logic.js"></script>
+<script>
+init('performance')
+</script>
+</body>
+</html>
