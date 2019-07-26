@@ -35,7 +35,7 @@ module.exports = {
 
 	// 创建token
 	async createToken(ctx, body = {}) {
-		let token = ctx.cookies.get('token') || ctx.headers['token']
+		let token = ctx.cookies.get('token') || ctx.headers['token'] || body.token
 		let tokens = []
 		let resSign = {}
 		if (token) {
@@ -57,11 +57,7 @@ module.exports = {
 
 			resSign.app_name = body.app_name
 			let resStore = await ctx.service.token.create(resSign)
-
-			console.log('resStore', resStore)
-			if (resStore) {
-				ctx.cookies.set('token', resSign.sign)
-			} else {
+			if (!resStore) {
 				ctx.logger.error(resStore)
 			}
 		}

@@ -25,6 +25,11 @@ exports.validate = {
 	path: path.join(__dirname, '../app/lib/plugin/validate')
 };
 
+// exports.cors = {
+//   enable: true,
+//   package: 'egg-cors',
+// };
+
 exports.mongoose = {
   enable: true,
   package: 'egg-mongoose',

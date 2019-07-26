@@ -126,9 +126,9 @@
         // for (i in options.data) {
         //     sendData = sendData + i + "=" + encodeURIComponent(options.data[i]) + "&";
         // }
-
         // sendData = sendData.replace(/&$/, "");
         // if (options.type === "GET") url = url + "?" + sendData;
+        options.data.token = localStorage.getItem('analyses_token') || ""
         xhr.open(options.type, url, true);
         if (options.type === "POST") {
             sendData = JSON.stringify(options.data)
@@ -139,7 +139,14 @@
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
-                    options.success(xhr.responseText);
+                    try {
+                        var res = JSON.parse(xhr.responseText)
+                        options.success(res);
+                        localStorage.setItem('analyses_token', res.data.sign);
+                    } catch (err) {
+                        console.error(err)
+                    }
+                    
                 } else {
                     options.error({
                         msg: "error readyState:" + xhr.readyState + "status:" + xhr.status,
@@ -593,8 +600,8 @@
     window.addEventListener("load", function () {
         setTimeout(function() {
             performanceInit();
-            toPushServer()
-            //upRate() && toPushServer();
+            //toPushServer()
+            upRate() && toPushServer();
         }, 20000);
     }, false);
 

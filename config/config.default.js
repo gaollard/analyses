@@ -110,8 +110,17 @@ module.exports = appInfo => {
             enable: false,
             // queryName: '_csrf', // 通过 query 传递 CSRF token 的默认字段为 _csrf
             // bodyName: '_csrf', // 通过 body 传递 CSRF token 的默认字段为 _csrf
-		}
-	}
+        },
+        // domainWhiteList: [
+        //     "*"
+        // ],
+    }
+    
+    // config.cors = {
+    //     origin: '*',
+    //     credentials: true,
+    //     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
+    // }
 	
 	// app name mapping
 	// controller => service

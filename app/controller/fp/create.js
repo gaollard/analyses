@@ -26,7 +26,8 @@ class PerformanceReportController extends Controller {
 
 		let oValues = {
 			ip: ctx.helper.ip(ctx.req),
-			app_name: app_name
+			app_name: app_name,
+			token: body.token
 		}
 
 		// 获取城市维度统计
@@ -41,7 +42,9 @@ class PerformanceReportController extends Controller {
 
 		res = await ctx.service.fp.index.create(app_name, params)
 		ctx.body = {
-			data: res
+			data: {
+				sign: sign
+			}
 		}
     }
 }

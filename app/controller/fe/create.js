@@ -23,7 +23,9 @@ class ErrorReportController extends Controller {
 		
 		let res = await ctx.service.fe.index.create(app_name, body)
 		ctx.body = {
-			data: res
+			data: {
+				sign: sign
+			}
 		}
     }
 }
