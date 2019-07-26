@@ -73,6 +73,9 @@ let fp = {
 	})
 }
 
+let prevSortEelement = null // 存放上一个排序的dom
+let sortField = ['time', 'format_size', ...Object.keys(node)]	// 排序字段
+
 let debounce = (fn, delay = 300) => {
 	let timerId
 	return (...args) => {
@@ -105,8 +108,8 @@ let ajax = (url, method, data) => {
 	return new Promise((resolve, reject) => {
 		$.ajax({
 			url: `${domain}/api/v1/${url}`,
-			type: method || 'GET',
-			data: data,
+			type: method || 'POST',
+			data: JSON.stringify(data),
 			dataType: 'json',
 			contentType: 'application/json',
 			success: function (res = {}) {
@@ -128,9 +131,9 @@ let docInner = (el, fields, data) => {
 
 	if (!data) {
 		let htmls = []
-		fields.forEach(field => {
-			htmls.push(`<div class="row">${field}</div>`)
-		})
+		for (let i in fields) {
+			htmls.push(`<div class="row sort-action" data-sort-name="${i}" data-text="${fields[i]}">${fields[i]}</div>`)
+		}
 		temp.push(`<div class="row-box header">${htmls.join('')}</div>`)
 	} else {
 		typeof data === 'object' && data.forEach(item => {
@@ -186,14 +189,14 @@ let getFromName = (selectName) => {
 
 // 提交错误日志
 let createErrorReport = async () => {
-	let values = JSON.stringify(getFromName('#fe .form-box .search_name'))
+	let values = getFromName('#fe .form-box .search_name')
 	let res = await ajax('error-report', 'POST', values)
 	openCraetePop('#fe')
 }
 
 // 获取错误列表
 let getFeList = async () => {
-	let res = await ajax('error-report', 'GET', getFromName('#fe .search .search_name'))
+	let res = await ajax('error-report-list', 'POST', getFromName('#fe .search .search_name'))
 	docInner(fe.el, Object.keys(fe.dic), res)
 	getFeChart()
 }
@@ -201,7 +204,7 @@ let getFeList = async () => {
 // 获取错误-图表
 let getFeChart = async () => {
 	let oVal = Object.assign({}, getFromName('#fe .search .search_name'))
-	let res = await ajax('error-report-chart', 'GET', oVal)
+	let res = await ajax('error-report-chart', 'POST', oVal)
 	if (typeof res === 'string') {
 		renderChart(fe.chart)
 		return alert(res)
@@ -271,13 +274,15 @@ let createPerformanceReport = async () => {
 	let data = {
 		params: [values]
 	}
-	let res = await ajax('performance-report', 'POST', JSON.stringify(data))
+	let res = await ajax('performance-report', 'POST', data)
 	openCraetePop('#fp')
 }
 
 // 获取资源性能列表
-let getFpList = async () => {
-	let res = await ajax('performance-report', 'GET', getFromName('#fp .search .search_name'))
+let getFpList = async (opt) => {
+	let query = getFromName('#fp .search .search_name')
+	Object.assign(query, opt)
+	let res = await ajax('performance-report-list', 'POST', query)
 	docInner(fp.el, Object.keys(fp.dic), res)
 	getFpChart()
 }
@@ -285,7 +290,7 @@ let getFpList = async () => {
 // 获取资源性能-图表
 let getFpChart = async () => {
 	let oVal = Object.assign({}, getFromName('#fp .search .search_name'))
-	let res = await ajax('performance-report-chart', 'GET', oVal)
+	let res = await ajax('performance-report-chart', 'POST', oVal)
 	if (typeof res === 'string') {
 		renderChart(fp.chart)
 		return alert(res)
@@ -368,7 +373,7 @@ let init = (page = '') => {
 	timeDayStart.forEach(item => item.value = times(Date.now() - 1000 * 60 * 60 * 24 * 7).day)
 
 	if (page === 'error') {
-		docInner(fe.header, Object.values(fe.dic))
+		docInner(fe.header, fe.dic)
 		getFeList()
 		fe.el.addEventListener('click', (evt) => {
 			if (evt.target.classList.contains('stack')) {
@@ -389,7 +394,41 @@ let init = (page = '') => {
 	}
 
 	if (page === 'performance') {
-		docInner(fp.header, Object.values(fp.dic))
+		docInner(fp.header, fp.dic)
 		getFpList()
+
+		fp.header.addEventListener('click', (evt) => {
+			let target = evt.target
+			let {text, sortName} = target.dataset
+			let sortAction = ''
+			if (!target.classList.contains('sort-action')) return;
+			if (!sortField.includes(sortName)) return;
+
+			// 重置上一个排序dom
+			if (prevSortEelement && prevSortEelement.dataset.sortName !== sortName) {
+				prevSortEelement.innerHTML = prevSortEelement.dataset.text
+			}
+
+			prevSortEelement = target;
+
+			// 默认降序排列, 从大到小, 时间从近到远
+			// &#8593; 升序 asc
+			// &#8595; 降序 desc
+			if (target.classList.contains('desc')) {
+				target.innerHTML = `&#8595;${text}`
+				target.classList.remove('desc')
+				sortAction = -1
+			} else {
+				target.innerHTML = `&#8593;${text}`
+				target.classList.add('desc')
+				sortAction = 1
+			}
+
+			sortAction && getFpList({
+				sort: {
+					[sortName]: sortAction
+				}
+			})
+		})
 	}
 }

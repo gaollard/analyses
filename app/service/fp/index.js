@@ -18,43 +18,64 @@ class FpService extends Service {
 		if (result.result.ok !== 1) return -1
         return null
 	}
-	
-	// 列表查询
-    async query(appName, {user_id, sign, ip, city, start_time, end_time, accuracy_time, rs_type, duration, page_size = 10}) {
-		const ctx = this.ctx
-		let projection = {}
 
-		let durationQuery = {}
-		if (rs_type) {
-			durationQuery = {
+	// 查询RTT load_time查询参数
+	getRttParam(rs_type = "", duration = "") {
+		let query = {}
+		let rtt = {
+			duration: {
 				$gte: Number(duration)
 			}
 		}
-		
-		// doc类别没有duration, 有loadTime, 暂不支持doc类型的duration查询
-		if (rs_type === 'doc') {
-			durationQuery = {}
+		let loadTime = {
+			load_time: {
+				$gte: Number(duration)
+			}
 		}
 
-		let params = ctx.helper.filterEmpty({
-			user_id: user_id,
-			sign: sign,
-			ip: ip,
-			city: city,
-			rs_type: rs_type,
-			duration: durationQuery,
-			time: accuracy_time,
-			create_time: {
-				$gte: start_time,
-				$lte: end_time
+		if (duration) {
+			if (!rs_type) {
+				query = {
+					"$or": [
+						rtt,
+						loadTime
+					]
+				}
 			}
-		}, true)
+			if (rs_type) query = rtt
+			if (rs_type === 'doc') query = loadTime	// 如果是doc, 则以load_time字段查询, 否则已duration查询
+		}
 
-		return await ctx.model[`Fp${appName}`].find(params, projection).sort({time: -1}).limit(Number(page_size))
+		return query
+	}
+
+	// 获取列表和图表查询条件
+	getFindParams(opt = {}) {
+		const ctx = this.ctx
+		return ctx.helper.filterEmpty(Object.assign({
+			user_id		: opt.user_id,
+			sign		: opt.sign,
+			ip			: opt.ip,
+			city		: opt.city,
+			rs_type		: opt.rs_type,
+			time		: opt.accuracy_time,
+			create_time	: {
+				$gte: opt.start_time,
+				$lte: opt.end_time
+			}
+		}, this.getRttParam(opt.rs_type, opt.duration)), true)
+	}
+	
+	// 列表查询
+    async query(appName, opt) {
+		const ctx = this.ctx
+		let projection = {}
+		let sort = opt.sort || {time: -1}
+		return await ctx.model[`Fp${appName}`].find(this.getFindParams(opt), projection).sort(sort).limit(Number(opt.page_size))
 	}
 	
 	// 图表查询
-    async chart(appName, {user_id, sign, ip, city, start_time, end_time, accuracy_time, rs_type, duration, page_size = 10}) {
+    async chart(appName, opt) {
 		const ctx = this.ctx
 		let projection = {
 			ready_start: 1,
@@ -78,33 +99,8 @@ class FpService extends Service {
 			_id: 0
 		}
 
-		let durationQuery = {}
-		if (rs_type) {
-			durationQuery = {
-				$gte: Number(duration)
-			}
-		}
-		
-		// doc类别没有duration, 有loadTime
-		if (rs_type === 'doc') {
-			durationQuery = {}
-		}
-
-		let params = ctx.helper.filterEmpty({
-			user_id: user_id,
-			sign: sign,
-			ip: ip,
-			city: city,
-			rs_type: rs_type,
-			duration: durationQuery,
-			time: accuracy_time,
-			create_time: {
-				$gte: start_time,
-				$lte: end_time
-			}
-		}, true)
-
-		let res = await ctx.model[`Fp${appName}`].find(params, projection).sort({time: 1}).limit(Number(page_size))
+		let sort = opt.sort || {time: -1}
+		let res = await ctx.model[`Fp${appName}`].find(this.getFindParams(opt), projection).sort(sort).limit(Number(opt.page_size))
 		if (!res.length) return {}
 
 		let o = {}
