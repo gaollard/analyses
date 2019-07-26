@@ -28,6 +28,7 @@ exports.fp = {
 
 	domain_time: {type: Number, required: false},			// DNS查询耗时
 	conn_time: {type: Number, required: false},				// TCP连接耗时
+	https_time: {type: Number, required: false},			// HTTPS连接耗时
 
 	req_time: {type: Number, required: false},				// request请求耗时
 	res_time: {type: Number, required: false},				// response耗时

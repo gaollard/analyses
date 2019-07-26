@@ -331,8 +331,9 @@
  * @method Performance
  * @description  TTFB、TTSR、TTDC、TTFL 性能检测
  * 
- *  // https://segmentfault.com/a/1190000002589116
- *  // https://www.w3.org/TR/navigation-timing/
+ *  https://segmentfault.com/a/1190000002589116
+ *  https://www.w3.org/TR/navigation-timing/
+ *  https://www.cnblogs.com/btgyoyo/p/6341077.html
  */
 ;(function() {
     var config = {
@@ -352,6 +353,7 @@
         unloadEventTime: 'unload前文档耗时',
         lookupDomainTime: 'DNS查询耗时',
         connectTime: 'TCP连接耗时',
+        HTTPSTime: 'HTTPS连接耗时',
         requestTime: 'request请求耗时',
         responseTime: 'response响应耗时',
         initDomTreeTime: 'dom解析构建耗时',
@@ -477,6 +479,7 @@
         var waitingTime         = timing.domainLookupStart  - timing.fetchStart;
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
         var connectTime         = timing.connectEnd - timing.connectStart;
+        var httpsTime           = timing.secureConnectionStart ? (timing.connectEnd - timing.secureConnectionStart) : 0;
 
         var requestTime         = timing.responseStart - timing.requestStart;
         var responseTime        = timing.responseEnd - timing.responseStart;
@@ -492,6 +495,7 @@
             waiting_time: Number(waitingTime.toFixed(2)),
             domain_time: Number(lookupDomainTime.toFixed(2)),
             conn_time: Number(connectTime.toFixed(2)),
+            https_time: Number(httpsTime.toFixed(2)),
             req_time: Number(requestTime.toFixed(2)),
             res_time: Number(responseTime.toFixed(2)),
             duration: Number(duration.toFixed(2)),
@@ -509,6 +513,7 @@
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
 
         var connectTime         = timing.connectEnd - timing.connectStart;
+        var httpsTime           = timing.secureConnectionStart ? (timing.connectEnd - timing.secureConnectionStart) : 0;   // SSL 安全连接耗时
         var requestTime         = timing.responseStart - timing.requestStart;
         var responseTime        = timing.responseEnd - timing.responseStart;
 
@@ -528,6 +533,7 @@
             unload_event_time: Number(unloadEventTime.toFixed(2)),
             domain_time: Number(lookupDomainTime.toFixed(2)),
             conn_time: Number(connectTime.toFixed(2)),
+            https_time: Number(httpsTime.toFixed(2)),
             req_time: Number(requestTime.toFixed(2)),
             res_time: Number(responseTime.toFixed(2)),
             dom_tree_time: Number(initDomTreeTime.toFixed(2)),

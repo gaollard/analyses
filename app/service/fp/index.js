@@ -63,7 +63,8 @@ class FpService extends Service {
 			unload_event_time: 1,
 
 			domain_time: 1,
-			conn_time:　1,
+			conn_time: 1,
+			https_time: 1,
 			req_time: 1,
 			res_time: 1,
 
