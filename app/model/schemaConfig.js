@@ -30,9 +30,10 @@ exports.fp = {
 	conn_time: {type: Number, required: false},				// TCP连接耗时
 
 	req_time: {type: Number, required: false},				// request请求耗时
+	res_time: {type: Number, required: false},				// response耗时
 	dom_tree_time: {type: Number, required: false},			// 请求完毕至dom加载
 
-	dom_ready_time: {type: Number, required: false},			// 解析dom树耗时
+	dom_ready_time: {type: Number, required: false},		// 解析dom树耗时
 	load_event_time: {type: Number, required: false},		// load事件耗时
 	load_time: {type: Number, required: false},				// 从开始至load总耗时
 

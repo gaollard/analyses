@@ -350,6 +350,7 @@
         lookupDomainTime: 'DNS查询耗时',
         connectTime: 'TCP连接耗时',
         requestTime: 'request请求耗时',
+        responseTime: 'response响应耗时',
         initDomTreeTime: '请求完毕至dom加载',
         domReadyTime: '解析dom树耗时',
         loadEventTime: 'load事件耗时',
@@ -473,7 +474,10 @@
         var waitingTime         = timing.domainLookupStart  - timing.fetchStart;
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
         var connectTime         = timing.connectEnd - timing.connectStart;
-        var requestTime         = timing.responseEnd - timing.requestStart;
+
+        var requestTime         = timing.responseStart - timing.requestStart;
+        var responseTime        = timing.responseEnd - timing.responseStart;
+
         var size                = timing.transferSize || 0;
         var duration            = timing.duration;
 
@@ -486,6 +490,7 @@
             domain_time: Number(lookupDomainTime.toFixed(2)),
             conn_time: Number(connectTime.toFixed(2)),
             req_time: Number(requestTime.toFixed(2)),
+            res_time: Number(responseTime.toFixed(2)),
             duration: Number(duration.toFixed(2)),
             format_size: formatSize(size),
             isNew: timing.isNew
@@ -499,8 +504,11 @@
         var waitingTime         = timing.domainLookupStart  - timing.fetchStart;    // 负数表示阻塞时长
         var unloadEventTime     = timing.unloadEventEnd - timing.unloadEventStart;
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
+
         var connectTime         = timing.connectEnd - timing.connectStart;
-        var requestTime         = timing.responseEnd - timing.requestStart;
+        var requestTime         = timing.responseStart - timing.requestStart;
+        var responseTime        = timing.responseEnd - timing.responseStart;
+
         var initDomTreeTime     = timing.domInteractive - timing.responseEnd;
         var domReadyTime        = timing.domComplete - timing.domInteractive;       // 过早获取时,domComplete有时会是0
         var loadEventTime       = timing.loadEventEnd - timing.loadEventStart;
@@ -518,8 +526,9 @@
             domain_time: Number(lookupDomainTime.toFixed(2)),
             conn_time: Number(connectTime.toFixed(2)),
             req_time: Number(requestTime.toFixed(2)),
-            domtree_time: Number(initDomTreeTime.toFixed(2)),
-            domready_time: Number(domReadyTime.toFixed(2)),
+            res_time: Number(responseTime.toFixed(2)),
+            dom_tree_time: Number(initDomTreeTime.toFixed(2)),
+            dom_ready_time: Number(domReadyTime.toFixed(2)),
             load_event_time: Number(loadEventTime.toFixed(2)),
             load_time: Number(loadTime.toFixed(2)),
             format_size: formatSize(size),
@@ -602,7 +611,7 @@
             performanceInit();
             //toPushServer()
             upRate() && toPushServer();
-        }, 20000);
+        }, 4000);
     }, false);
 
     window.Performance = {

@@ -65,6 +65,7 @@ class FpService extends Service {
 			domain_time: 1,
 			conn_time:　1,
 			req_time: 1,
+			res_time: 1,
 
 			dom_tree_time: 1,
 			dom_ready_time: 1,
