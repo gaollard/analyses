@@ -1,16 +1,22 @@
-	可视化错误日志和资源性能分析
+# 可视化错误日志和资源性能分析
+
 	前端错误上报，后台分析错误率
 	前端上报资源性能，后台分析各个节点加载情况
 
-### demo
-	public/index.html 
+### 说明
+
+	页面预览：public/index.html 
+	各业务方接入方式：doc/accessMode.md
+	接口文档：doc/api.md
+	部署依赖：doc/deploy.md
+	性能测试报告：ab/report.md
 
 ### 本地开发
 
 ```bash
 $ npm i
 $ npm run dev
-$ open http://localhost:7001/
+$ open http://localhost:8001/
 ```
 
 ### 部署

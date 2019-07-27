@@ -1,4 +1,4 @@
-### analyses接入方式
+### analyses各方接入方式
 
 	1、script引用
 	<script src="//analyses.huishoubao.com/public/js/analyses.js"></script>

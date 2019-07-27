@@ -1,0 +1,9 @@
+{
+	"app_name": "YouPin",
+	"user_id": "1",
+	"url": "xxx.com",
+	"file": "2.js",
+	"line": "10:32",
+	"message": "dddd is undefined",
+	"stack": "ksdff ___ asdfsfasdf"
+}
