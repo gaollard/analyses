@@ -6,12 +6,14 @@ if (location.port) {
 ErrorReport.setConfig({
 	api: `${domain}/api/v1/error-report`,
 	user_id: '',
-	app_name: 'ZiYou'
+	app_name: 'ZiYou',
+	call_name: 'business_env_appliaction'
 })
 Performance.setConfig({
 	api: `${domain}/api/v1/performance-report`,
 	user_id: '',
-	app_name: 'ZiYou'
+	app_name: 'ZiYou',
+	call_name: 'business_env_appliaction'
 })
 
 
@@ -20,6 +22,7 @@ let fe = {
 	el: document.querySelector('#fe-content'),
 	chart: document.querySelector('#fe-cheart'),
 	dic: {
+		call_name: '上报方名称',
 		user_id: '用户id',
 		ip: '用户ip',
 		sign: 'sign',
@@ -57,7 +60,8 @@ let fp = {
 	chart: document.querySelector('#fp-cheart'),
 
 	dic: Object.assign({}, {
-		app_name: '应用名',
+		//app_name: '应用名',
+		call_name: '上报方名称',
 		user_id: '用户id',
 		city: '城市',
 		ip: '用户ip',
@@ -69,7 +73,7 @@ let fp = {
 		format_size: '资源大小K',
 		file: '资源路径',
 		method_type: '加载方式',
-		network_type: '网络情况'
+		//network_type: '网络情况'
 	})
 }
 

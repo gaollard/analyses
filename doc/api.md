@@ -19,6 +19,7 @@
 	入参:
 	{
 		"app_name": "YouPin",				// 应用名
+		"call_name": "test",				// 上报方名称，具有意义的，之后用来定位查询
 		"user_id": "TEST134",				// 用户id
 		"url": "xxx.com",					// 错误的url
 		"file": "2.js",						// 错误的文件
@@ -180,6 +181,7 @@
 	{
 		"page_size":300,
 		"app_name":"ZiYou",
+		"call_name": "test",
 		"user_id":"",
 		"ip":"",
 		"sign":"",

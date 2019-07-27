@@ -4,6 +4,8 @@ exports.fe = {
 	user_id: {type: String, required: false}, 				// 用户id，接入方上报, 基本上是缺失值
 	sign: {type: String, required: false, index: true},		// 用户签名, 系统生成
 	ip: {type: String, required: false},					// 用户ip
+	call_name: {type: String, required: false},				// 上报方, 有含义的命名
+	
 	url: {type: String, required: false},					// 错误页面的url
 	file: {type: String, required: false},					// 错误文件的url
 	line: {type: String, required: false},					// 错误行号
@@ -20,6 +22,7 @@ exports.fp = {
 	sign: {type: String, required: false, index: true},		// 用户签名, 系统生成
 	ip: {type: String, required: false},					// 用户ip
 	city: {type: String, required: false},					// 城市
+	call_name: {type: String, required: false},				// 上报方, 有含义的命名
 
 	ready_start: {type: Number, required: false},			// 准备新页面时间耗时
 	redirect_time: {type: Number, required: false},			// redirect重定向耗时

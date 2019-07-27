@@ -57,6 +57,7 @@ class FpService extends Service {
 			sign		: opt.sign,
 			ip			: opt.ip,
 			city		: opt.city,
+			call_name	: opt.call_name,
 			rs_type		: opt.rs_type,
 			time		: opt.accuracy_time,
 			create_time	: {

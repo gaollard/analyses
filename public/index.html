@@ -14,12 +14,13 @@
 <div class="layout-box" id="fe">
 	<div class="search">
 		<div class="label">
-			<span class="red">*</span>应用名:
+			<span class="red">*</span>业务方:
 			<select name="app_name" class="search_name">
 				<option value="ZiYou">自有</option>
 				<option value="YouPin">优品</option>
 			</select>
 		</div>
+		<div class="label">上报方: <input name="call_name" type="text" class="search_name" value="" placeholder="上报方名称" /></div>
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
 		<div class="label">用户ip: <input name="ip" type="text" class="search_name" value="" placeholder="用户ip" /></div>
 		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
@@ -40,6 +41,7 @@
 					<option value="ZiYou">自有</option>
 					<option value="YouPin">优品</option>
 				</select>
+				<input name="call_name" class="search_name" type="text" value="" placeholder="上报方名称, 必须要有意义的" />
 				<input name="user_id" class="search_name" type="text" value="" placeholder="用户id或唯一标识" />
 				<input name="url" class="search_name" type="text" value="" placeholder="错误页面的url" />
 				<input name="file" class="search_name" type="text" value=""  placeholder="错误的文件"/>

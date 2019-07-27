@@ -19,7 +19,8 @@
     var config = {
         api: '/api/v1/error-report',
         user_id: "",
-        app_name: ''
+        app_name: '',
+        call_name: ''
     }
 
     var setConfig = function(data) {
@@ -201,6 +202,7 @@
         sendBefore: function(data) {
             data.user_id = config.user_id
             data.app_name = config.app_name
+            data.call_name = config.call_name
             fetchTo(config.api, {
                 data: filterEmpty(data)
             });
@@ -490,6 +492,7 @@
         return {
             user_id: config.user_id,
             app_name: config.app_name,
+            call_name: config.call_name,
 
             redirect_time: Number(redirectTime.toFixed(2)),
             waiting_time: Number(waitingTime.toFixed(2)),
@@ -526,6 +529,7 @@
         return {
             user_id: config.user_id,
             app_name: config.app_name,
+            call_name: config.call_name,
 
             ready_start: Number(readyStart.toFixed(2)),
             redirect_time: Number(redirectTime.toFixed(2)),
