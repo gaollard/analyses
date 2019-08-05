@@ -1,7 +1,8 @@
 ### analyses各方接入方式
 
 	1、script引用
-	<script src="//analyses.huishoubao.com/public/js/analyses.js"></script>
+	<script src="http://analyses.huishoubao.com/public/js/analyses.js"></script> 	测试环境
+	<script src="https://s1.huishoubao.com/static/analyses.js"></script>			生产环境cdn
 
 	2、初始化
 	@description 收集资源信息和错误日志，线上分析结果
@@ -14,7 +15,7 @@
 
 	配置错误日志
 	ErrorReport.setConfig({
-		api: "//analyses.huishoubao.com/api/v1/error-report",
+		api: "http://analyses.huishoubao.com/api/v1/error-report",
 		user_id: 'YSG123456',
 		app_name: 'ZiYou',
 		call_name: 'ZiYou_Pc_Official
@@ -22,7 +23,7 @@
 
 	配置资源性能
 	Performance.setConfig({
-		api: "//analyses.huishoubao.com/api/v1/performance-report",
+		api: "http://analyses.huishoubao.com/api/v1/performance-report",
 		user_id: 'YSG123456',
 		app_name: 'ZiYou',
 		call_name: 'ZiYou_Pc_Official
