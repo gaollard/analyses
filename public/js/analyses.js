@@ -630,7 +630,7 @@
         });
     };
 
-    // 上报频率
+    // 上报频率 true上报, false不上报
     var upRate = function() {
         var prevTime = localStorage.getItem('performance');
         if (!prevTime) return true;
@@ -654,10 +654,8 @@
             // 此时取可以查看到页面文档呈现时间
             if (count === reportInterval) {
                 performanceInit();
-                if (upRate()) {
-                    waitReport = true
-                    toPushServer();
-                }
+                waitReport = true
+                toPushServer();
             }
 
             // 30s再取一次, 如果用户一直停留在页面, 可以获得更多上报信息
@@ -672,7 +670,7 @@
     }
 
     win.addEventListener("load", function () {
-        loop()
+        upRate() && loop()
     }, false);
 
     win.Performance = {
