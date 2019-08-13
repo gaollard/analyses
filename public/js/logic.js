@@ -52,7 +52,7 @@ let node = {
 	dom_ready_time: '准备就绪耗时',
 	load_event_time: 'load事件耗时',
 	load_time: '从开始至load总耗时',
-	duration: 'RTT',
+    duration: 'RTT'
 }
 let fp = {
 	header: document.querySelector('#fp-header'),
@@ -72,7 +72,8 @@ let fp = {
 	}, node, {
 		format_size: '资源大小K',
 		file: '资源路径',
-		method_type: '加载方式',
+        method_type: '加载方式',
+        url: 'URL'
 		//network_type: '网络情况'
 	})
 }
@@ -142,9 +143,10 @@ let docInner = (el, fields, data) => {
 	} else {
 		typeof data === 'object' && data.forEach(item => {
 			let htmls = []
-			let more = ""
+            let more = ""
+            let isRed = ''
 			fields.forEach(field => {
-				// 调用栈显示
+                // 调用栈显示
 				let text = item[field]
 				let originText = text
 				if (field === 'stack') {
@@ -159,11 +161,16 @@ let docInner = (el, fields, data) => {
 					if (text) {
 						text = text.slice(0, 40) + "..."
 					}
-				}
+                }
+                
+                // 标红 doc > 2s
+                if (field === 'load_time' && text > 2000) {
+                    isRed = 'red-bg'
+                }
 
 				htmls.push(`<div class="row ${field}" title="${originText}">${typeof text === "undefined" ? '/' : text}</div>`)
 			})
-			temp.push(`<div class="row-box fe-click">${htmls.join('')}</div>`)
+			temp.push(`<div class="row-box fe-click ${isRed}">${htmls.join('')}</div>`)
 			if (more) {
 				temp.push(more)
 			}
@@ -388,13 +395,7 @@ let init = (page = '') => {
 				}
 				nextElement.classList.add('hide')
 			}
-		}, false)
-
-		if (Math.random() * 30 > 20) {
-			setTimeout(() => {
-				asdfasf()
-			}, 1000)
-		}
+        }, false)
 	}
 
 	if (page === 'performance') {

@@ -49,5 +49,7 @@ exports.fp = {
 	file: {type: String, required: false},					// 文件地址
 
 	create_time: {type: String, required: true},			// 上报时间 图表 精确到天
-	time: {type: String, required: true},					// 上报时间 列表查询
+    time: {type: String, required: true},					// 上报时间 列表查询
+    
+    url: {type: String, required: false},					// 页面的url
 }

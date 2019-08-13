@@ -165,9 +165,10 @@
          * @description 过滤哪些不上报的关键错误点
          *  Script error,
          *  WeixinJSBridge 微信浏览器不同步报错
-         *  VectorLayer   百度地图矢量图层错误
+         *  VectorLayer 百度地图矢量图层错误
+         *  logreport 日志上报接口
          */
-        filterKey: [ "Script error", "WeixinJSBridge", "VectorLayer" ],
+        filterKey: [ "Script error", "WeixinJSBridge", "VectorLayer", "logreport" ],
 
         /**
          * @method isCheckKeyToReport
@@ -337,15 +338,20 @@
  *  https://www.w3.org/TR/navigation-timing/
  *  https://www.cnblogs.com/btgyoyo/p/6341077.html
  */
-;(function() {
+;(function(win) {
+    var locat = win.location
+    var online = locat.port !== "8001"
+    var reportInterval = 3  // 上报页面文档呈现时间， 默认是3s
+    var LongStay = 30       // 在页面停留30s，再记录上报一次
     var config = {
         api: "/api/v1/performance-report",
         user_id: "",
-        app_name: ''
+        app_name: '',
+        url: locat.href
     };
-    var UPINTERVALTIME = 1000 * 1 * 60 * 60 * 24 * 1;   // 1天
+    var UPINTERVALTIME = 1000 * 1 * 60 * 60 * 24 * 1;   // 1天统计一次
     var filterFiles = [];
-    var origin = location.origin;
+    var origin = locat.origin;
     var list = [];
     var imgType = ['png', 'gif', 'jpg', 'jpeg', 'bmp', 'svg', 'pcx', 'tiff', 'fpx', 'hdri', 'raw'];
     var reation = {
@@ -385,7 +391,7 @@
     };
 
     // 移动端不兼容 memory, getEntries
-    window.performanceInit = function () {
+    win.performanceInit = function () {
         if (typeof performance.getEntries === 'function') {
             list = performance.getEntries();
             getResource();
@@ -404,7 +410,7 @@
             2: '网页通过{前进}或{后退}按钮加载'
         };
         cache.methodType = {
-            text:  (relation[type] || '任何其他来源的加载') + ' 网络类型：' + (window.networkType || '未获取'),
+            text:  (relation[type] || '任何其他来源的加载') + ' 网络类型：' + (win.networkType || '未获取'),
             type: type
         };
     };
@@ -548,6 +554,20 @@
         }
     };
 
+    // 给已上报的打上标签
+    var setReportState = function() {
+        var resource = cache.resource
+        var doc = cache.navigation.doc
+        doc.report = true
+        for (i in resource) {
+            if (typeof resource[i] !== 'object') continue;
+            for (j in resource[i]) {
+                if (isFileFilter(j)) continue;
+                resource[i][j].report = true;
+            }
+        }
+    };
+
     // 判断文件是否需要过滤
     var isFileFilter = function(path) {
         var i, isState = false;
@@ -568,14 +588,18 @@
         // 组装doc
         doc.rs_type = 'doc';
         doc.method_type = cache.methodType.type;
-        doc.network_type = window.networkType || '未获取';
-        data.push(doc);
+        doc.network_type = win.networkType || '未获取';
+
+        if (!doc.report) {
+            data.push(doc);
+        }
 
         // 组装资源文件
         for (i in resource) {
             if (typeof resource[i] !== 'object') continue;
             for (j in resource[i]) {
                 if (isFileFilter(j)) continue;
+                if (resource[i][j].report) continue
                 resource[i][j].rs_type = i;
                 resource[i][j].file = j;
                 delete resource[i][j].isNew;
@@ -594,11 +618,14 @@
     // 发送服务端
     var toPushServer = function() {
         var data = {
+            url: config.url,
             params: formatUploadData()
         }
         ErrorReport.fetchTo(config.api, {
             data: data,
             success: function() {
+                setReportState()
+                console.log(JSON.stringify(cache.resource))
                 localStorage.setItem('performance', Date.now());
             }
         });
@@ -619,17 +646,34 @@
         }
     };
 
-    window.addEventListener("load", function () {
-        setTimeout(function() {
-            performanceInit();
-            //toPushServer()
-            upRate() && toPushServer();
-        }, 10000);
+    var loop = function() {
+        var count = 0
+        var timer = setInterval(function() {
+            count = count + 1
+
+            // 此时取可以查看到页面文档呈现时间
+            if (count === reportInterval) {
+                performanceInit();
+                upRate() && toPushServer();
+            }
+
+            // 30s再取一次, 如果用户一直停留在页面, 可以获得更多上报信息
+            if (count === LongStay) {
+                performanceInit()
+                toPushServer();
+                clearInterval(timer)
+            }
+        }, 1000);
+    }
+
+    win.addEventListener("load", function () {
+        loop()
     }, false);
 
-    window.Performance = {
+    win.Performance = {
         setConfig: setConfig,
         analysisDoc: analysisDoc,
-        analysisResource: analysisResource
+        analysisResource: analysisResource,
+        cache: cache
     }
-})();
+})(window);

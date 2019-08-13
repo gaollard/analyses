@@ -6,6 +6,9 @@ ul,li{list-style: none}
     font-weight: 700;
     padding-right: 3px;
 }
+.red-bg{
+    background: #ffa8a8!important;
+}
 
 .tab-title{
     position: fixed;
