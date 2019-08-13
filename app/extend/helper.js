@@ -27,7 +27,9 @@ module.exports = {
 
 		// 本地ip
 		if (ip.indexOf('::ffff') > -1) ip = ip.slice(7)
-        if (ip.length > 14) ip = ip.slice(0, 14)
+        if (ip.indexOf(',') > -1) {
+            ip = ip.slice(0, ip.indexOf(','))
+        }
 		return ip
 	},
 
