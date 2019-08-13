@@ -647,23 +647,19 @@
 
     var loop = function() {
         var count = 0
-        var waitReport = false
         var timer = setInterval(function() {
             count = count + 1
 
             // 此时取可以查看到页面文档呈现时间
             if (count === reportInterval) {
                 performanceInit();
-                waitReport = true
                 toPushServer();
             }
 
             // 30s再取一次, 如果用户一直停留在页面, 可以获得更多上报信息
             if (count === LongStay) {
-                if (waitReport) {
-                    performanceInit()
-                    toPushServer();
-                }
+                performanceInit()
+                toPushServer();
                 clearInterval(timer)
             }
         }, 1000);
