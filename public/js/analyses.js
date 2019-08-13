@@ -468,7 +468,10 @@
                 }
             }
 
-            resource[initiatorType][newName] = analysisResource(timing);
+            // 过滤beacon类型
+            if (resource[initiatorType]) {
+                resource[initiatorType][newName] = analysisResource(timing);
+            }
         }
     };
 
