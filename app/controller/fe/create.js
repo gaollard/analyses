@@ -14,7 +14,17 @@ class ErrorReportController extends Controller {
 				code: -1,
 				msg: '无效应用名'
 			}
-		}
+        }
+        
+        // 强制过滤此错误相关的日志
+        // https://logreport.huishoubao.com/hjxapps/
+        let message = body.message || ""
+        if (message.indexOf('logreport') > -1) {
+            return ctx.body = {
+                code: -1,
+                msg: '非法日志'
+            }
+        }
 
 		body.user_agent = ctx.userAgent
 		body.ip = ctx.helper.ip(ctx.req)
