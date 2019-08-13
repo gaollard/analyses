@@ -661,9 +661,11 @@
             }
 
             // 30s再取一次, 如果用户一直停留在页面, 可以获得更多上报信息
-            if (count === LongStay && waitReport) {
-                performanceInit()
-                toPushServer();
+            if (count === LongStay) {
+                if (waitReport) {
+                    performanceInit()
+                    toPushServer();
+                }
                 clearInterval(timer)
             }
         }, 1000);
