@@ -12,7 +12,10 @@ class ErrorReportController extends Controller {
 		if (!appNameMapping.includes(app_name)) {
 			return ctx.body = {
 				code: -1,
-				msg: '无效应用名'
+                msg: '无效应用名',
+                data: {
+                    sign: ''
+                }
 			}
         }
         
@@ -22,7 +25,10 @@ class ErrorReportController extends Controller {
         if (message.indexOf('logreport') > -1) {
             return ctx.body = {
                 code: -1,
-                msg: '非法日志'
+                msg: '非法日志',
+                data: {
+                    sign: ''
+                }
             }
         }
 
