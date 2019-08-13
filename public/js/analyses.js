@@ -625,7 +625,6 @@
             data: data,
             success: function() {
                 setReportState()
-                console.log(JSON.stringify(cache.resource))
                 localStorage.setItem('performance', Date.now());
             }
         });
