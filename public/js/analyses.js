@@ -145,9 +145,8 @@
                         options.success(res);
                         localStorage.setItem('analyses_token', res.data.sign);
                     } catch (err) {
-                        console.error(err)
+                        //console.error(err)
                     }
-                    
                 } else {
                     options.error({
                         msg: "error readyState:" + xhr.readyState + "status:" + xhr.status,
