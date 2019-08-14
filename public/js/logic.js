@@ -154,7 +154,7 @@ let ajax = (url, method, data) => {
 	})
 }
 
-let docInner = (el, fields, data) => {
+let docInner = (el, fields, data, totalEl) => {
 	let temp = []
 
 	if (!data) {
@@ -205,7 +205,9 @@ let docInner = (el, fields, data) => {
 			}
 		})
 
-		document.querySelector('.total-box').innerHTML = `一共（${data.length}）条`
+        if (totalEl) {
+            totalEl.innerHTML = `一共（${data.length}）条`
+        }
 	}
 
 	el.innerHTML = temp.join('')
@@ -325,7 +327,7 @@ let getFpList = async (opt) => {
     delete query.network_type
 	Object.assign(query, opt)
 	let res = await ajax('performance-report-list', 'POST', query)
-	docInner(fp.el, Object.keys(fp.dic), res)
+	docInner(fp.el, Object.keys(fp.dic), res, document.querySelector('.total-box'))
     getFpChart()
     getFpRatio()
 }
