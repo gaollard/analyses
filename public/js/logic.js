@@ -64,13 +64,17 @@ let fp = {
     
     // 数据
     data: {
-        //networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 20M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
-        networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 20M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
-        delayBaseValue: [1500, 800, 600, 100, 500, 100],    // 基准延迟
+        networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 15M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
+        delayBaseValue: [500, 500, 500, 500, 500, 500],         // 基准延迟ms
 
-        dom_tree_time: [1500, 800, 600, 100, 500, 100],
-        load_time: [1500, 800, 600, 100, 500, 100],
-        duration: [1500, 800, 600, 100, 500, 100]
+        ready_start: [400, 200, 50, 30, 70, 30],                // 准备新页面时间耗时
+        domain_time: [100, 100, 100, 100, 100, 100],            // DNS查询耗时
+        conn_time: [100, 100, 100, 100, 100, 100],              // TCP连接耗时
+        https_time: [200, 200, 200, 200, 200, 200],             // SSL安全连接耗时
+        req_time: [600, 600, 600, 600, 600, 600],               // request请求耗时
+        dom_tree_time: [2000, 1000, 600, 600, 1000, 500],       // dom解析
+        load_time: [10000, 8000, 5000, 2500, 6000, 2000],       // load事件
+        duration: [1500, 800, 600, 100, 500, 100]               // 资源RTT
     },
 
     // ratio比例
