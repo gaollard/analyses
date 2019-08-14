@@ -43,12 +43,12 @@ exports.fp = {
 
 	format_size: {type: Number, required: false},			// 资源大小
 	rs_type: {type: String, required: false},				// 资源类型
-	duration: {type: Number, required: false},				// 从开始至load总耗时
+	duration: {type: Number, required: false, index: true},				// 从开始至load总耗时
 	method_type: {type: Number, required: false},			// 打开方式
 	network_type: {type: String, required: false},			// 从开始至load总耗时
 	file: {type: String, required: false},					// 文件地址
 
-	create_time: {type: String, required: true},			// 上报时间 图表 精确到天
+	create_time: {type: String, required: true, index: true},			// 上报时间 图表 精确到天
     time: {type: String, required: true},					// 上报时间 列表查询
     
     url: {type: String, required: false},					// 页面的url
