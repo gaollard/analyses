@@ -57,8 +57,27 @@ let node = {
 let fp = {
 	header: document.querySelector('#fp-header'),
 	el: document.querySelector('#fp-content'),
-	chart: document.querySelector('#fp-cheart'),
+    chart: document.querySelector('#fp-cheart'),
+    search: document.querySelector('#search'),
+    headerRatio: document.querySelector('#fp-header-ratio'),
+    elRatio: document.querySelector('#fp-content-ratio'),
+    
+    // 数据
+    data: {
+        //networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 20M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
+        networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 20M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
+        delayBaseValue: [1500, 800, 600, 100, 500, 100],    // 基准延迟
 
+        dom_tree_time: [1500, 800, 600, 100, 500, 100],
+        load_time: [1500, 800, 600, 100, 500, 100],
+        duration: [1500, 800, 600, 100, 500, 100]
+    },
+
+    // ratio比例
+    dicRatio: {
+        time: '创建时间'
+    },
+    
 	dic: Object.assign({}, {
 		//app_name: '应用名',
 		call_name: '上报方名称',
@@ -147,7 +166,13 @@ let docInner = (el, fields, data) => {
             let isRed = ''
 			fields.forEach(field => {
                 // 调用栈显示
-				let text = item[field]
+                let text = item[field]
+                
+                // 防止错乱，过滤<>
+                if (['message', 'stack'].includes(field) && text && typeof text === 'string') {
+                   text = text.replace(/<|>/g, '')
+                }
+
 				let originText = text
 				if (field === 'stack') {
 					more = `<div class="row-box hide stack-row-box"><div class="row">${text}</div></div>`
@@ -176,7 +201,7 @@ let docInner = (el, fields, data) => {
 			}
 		})
 
-		document.querySelector('.total').innerHTML = `一共（${data.length}）条`
+		document.querySelector('.total-box').innerHTML = `一共（${data.length}）条`
 	}
 
 	el.innerHTML = temp.join('')
@@ -291,11 +316,14 @@ let createPerformanceReport = async () => {
 
 // 获取资源性能列表
 let getFpList = async (opt) => {
-	let query = getFromName('#fp .search .search_name')
+    let query = getFromName('#fp .search .search_name')
+    delete query.node_type
+    delete query.network_type
 	Object.assign(query, opt)
 	let res = await ajax('performance-report-list', 'POST', query)
 	docInner(fp.el, Object.keys(fp.dic), res)
-	getFpChart()
+    getFpChart()
+    getFpRatio()
 }
 
 // 获取资源性能-图表
@@ -367,6 +395,30 @@ let getFpChart = async () => {
 	renderChart(fp.chart, opt)
 }
 
+// 获取资源性能百分比
+let getFpRatio = async (opt) => {
+    let query = getFromName('#fp .search .search_name')
+    Object.assign(query, opt)
+    query.delay_arr = fp.data[query.node_type] ? fp.data[query.node_type] : fp.data.delayBaseValue
+
+    let res = await ajax('performance-report-ratio', 'POST', query)
+    let {delayResArr = [], total = 0} = res || {}
+    if (!total) return
+    let tableHeaderRow = generateRatioTable('getKey')
+    let o = {
+        time: query.accuracy_time ? query.accuracy_time : `${query.start_time}至${query.end_time}`,
+        node_type: query.node_type,
+        total: total
+    }
+
+    delayResArr.map((item, index) => {
+        o[`node_${index}`] = `${item}条, 延迟>${query.delay_arr[index]}ms, <b>${((item / total) * 100).toFixed(2) + "%"}</b>`
+    })
+
+    docInner(fp.elRatio, Object.keys(tableHeaderRow), [o])
+    console.log([o])
+}
+
 // 打开新增内容层
 let openCraetePop = (el) => {
 	let formBox = document.querySelector(`${el} .form-box`)
@@ -374,6 +426,33 @@ let openCraetePop = (el) => {
 		return formBox.classList.remove('hide')
 	}
 	formBox.classList.add('hide')
+}
+
+// 生成下拉框
+let generateSelect = (data = [], el) => {
+    if (!el) return;
+    var html = ['<option value="">--请选择--</option>']
+    data.map(item => {
+        html.push(`<option value="${item.value}">${item.name}</option>`)
+    })
+    el.innerHTML = html.join('')
+}
+
+// 生成ratio比例的table
+let generateRatioTable = (action) => {
+    let element = fp.search.querySelector('.node_type')
+    let nNode = {}
+    fp.data.networkType.map((item, index) => {
+        nNode[`node_${index}`] = `${item}`
+    })
+    let table = Object.assign(fp.dicRatio, {
+        node_type: `节点指标：${element.options[element.selectedIndex].text}`,
+    }, nNode, {
+        total: '总条数'
+    })
+
+    if (action) return table
+    docInner(fp.headerRatio, table)
 }
 
 let init = (page = '') => {
@@ -399,7 +478,8 @@ let init = (page = '') => {
 	}
 
 	if (page === 'performance') {
-		docInner(fp.header, fp.dic)
+        docInner(fp.header, fp.dic)
+        generateRatioTable()
 		getFpList()
 
 		fp.header.addEventListener('click', (evt) => {

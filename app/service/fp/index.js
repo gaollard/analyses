@@ -136,6 +136,32 @@ class FpService extends Service {
 		// 	}
 		// }
     }
+
+    // ratio查询
+    async ratio(appName, opt) {
+		const ctx = this.ctx
+        let projection = {}
+        let params = this.getFindParams(opt)
+        let total = await ctx.model[`Fp${appName}`].find(params, projection).count()
+        if (!opt.node_type || !opt.delay_arr) return {}
+
+        let delayArr = opt.delay_arr
+        let delayResArr = []
+        for (let i = 0; i < delayArr.length; i++) {
+            params[opt.node_type] = {
+                $gte: delayArr[i]
+            }
+
+            //console.log(`第${i}次：`, JSON.stringify(params))
+            let nodeCount = await ctx.model[`Fp${appName}`].find(params, projection).count()
+            delayResArr[i] = nodeCount
+        }
+        
+        return {
+            total,
+            delayResArr
+        }
+	}
 }
 
 module.exports = FpService

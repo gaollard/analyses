@@ -42,6 +42,13 @@ class ErrorReportController extends Controller {
 		let res = await this.query('chart')
 		ctx.body = res
     }
+
+    // 比例查询
+    async ratio() {
+        let ctx = this.ctx
+		let res = await this.query('ratio')
+		ctx.body = res
+	}
 }
 
 module.exports = ErrorReportController

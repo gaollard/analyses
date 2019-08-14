@@ -12,7 +12,7 @@
 </div>
 
 <div class="layout-box" id="fp">
-	<div class="search">
+	<div class="search" id="search">
 		<div class="label">
 			<span class="red">*</span>业务方: 
 			<select name="app_name" class="search_name">
@@ -38,7 +38,22 @@
 				<option value="xmlhttprequest">xmlhttprequest</option>
 				<option value="other">other</option>
 			</select>
-		</div>
+        </div>
+        <div class="label">节点指标: 
+			<select name="node_type" class="search_name node_type" onchange="generateRatioTable(this)">
+				<option value="ready_start">准备新页面时间耗时</option>
+				<option value="domain_time">DNS查询耗时</option>
+				<option value="conn_time">TCP连接耗时</option>
+				<option value="https_time">SSL安全连接耗时</option>
+				<option value="req_time">request请求耗时</option>
+                <option value="dom_tree_time">dom解析构建耗时</option>
+                <option value="load_time" selected>从开始至load总耗时</option>
+                <option value="duration">RTT</option>
+			</select>
+        </div>
+        <!-- <div class="label">网络指标: 
+			<select name="network_type" class="search_name network_type"></select>
+		</div> -->
 		<div class="label">RTT大于时间: <input name="duration" type="text" class="search_name" value="" placeholder="毫秒数" /></div>
 		<div class="label">
 			<span class="query" onclick="getFpList()">查询</span>&nbsp;
@@ -96,8 +111,12 @@
 		</div>
 	</div>
 
-	<div id="fp-cheart" class="cheart"></div>
-	<div class="total"></div>
+    <div id="fp-cheart" class="cheart"></div>
+    
+    <div id="fp-header-ratio" class="list-header"></div>
+	<div id="fp-content-ratio" class="list-content"></div>
+
+	<div class="total-box"></div>
 	<div id="fp-header" class="list-header"></div>
 	<div id="fp-content" class="list-content"></div>
 </div>
