@@ -42,7 +42,7 @@
         </div>
         <div class="label">资源路径: <input name="file" type="text" class="search_name" value="" placeholder="模糊搜索资源路径" /></div>
 
-        <div class="label">节点指标: 
+        <div class="label" title="用于查询节点资源占用比">节点指标: 
 			<select name="node_type" class="search_name node_type" onchange="generateRatioTable(this)">
 				<option value="ready_start">准备新页面时间耗时</option>
 				<option value="domain_time">DNS查询耗时</option>
@@ -115,7 +115,7 @@
 	</div>
 
     <div id="fp-chart" class="chart"></div>
-    <div id="fp-chart-avg" class="chart"></div>
+    <div id="fp-chart-avg" class="chart"></div> <!--不支持资源类型doc平均值查询，不支持多天查询-->
     
     <h2 class="table-title">节点资源占用比</h2>
     <div id="fp-header-ratio" class="list-header"></div>

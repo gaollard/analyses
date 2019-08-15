@@ -302,14 +302,25 @@ let getFeChart = async () => {
 			axisPointer : { 
 				type : 'shadow'
 			}
-		},
+        },
+        toolbox: {
+            left: "center",
+            bottom: 10,
+            show : true,
+            feature : {
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
 		legend: {
 			data: []
 		},
 		grid: {
 			left: '3%',
 			right: '4%',
-			bottom: '3%',
+			bottom: '50px',
 			containLabel: true
 		},
 		xAxis: {
@@ -405,7 +416,18 @@ let getFpChart = async () => {
 			axisPointer : { 
 				type : 'shadow'
 			}
-		},
+        },
+        toolbox: {
+            left: "center",
+            bottom: 10,
+            show : true,
+            feature : {
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
 		legend: {
 			type: 'scroll',
 			left: 200,
@@ -417,7 +439,7 @@ let getFpChart = async () => {
 		grid: {
 			left: '3%',
 			right: '4%',
-			bottom: '3%',
+			bottom: '50px',
 			containLabel: true
 		},
 		xAxis: [
@@ -511,7 +533,18 @@ let getFpAvg = async (value, action = 'hour') => {
 			axisPointer : { 
 				type : 'shadow'
 			}
-		},
+        },
+        toolbox: {
+            left: "center",
+            bottom: 10,
+            show : true,
+            feature : {
+                dataView : {show: true, readOnly: false},
+                magicType : {show: true, type: ['line', 'bar']},
+                restore : {show: true},
+                saveAsImage : {show: true}
+            }
+        },
 		legend: {
             action,
 			type: 'scroll',
@@ -524,7 +557,7 @@ let getFpAvg = async (value, action = 'hour') => {
 		grid: {
 			left: '3%',
 			right: '4%',
-			bottom: '3%',
+			bottom: '50px',
 			containLabel: true
 		},
 		xAxis: [
@@ -588,6 +621,13 @@ let generateRatioTable = (action) => {
     docInner(fp.headerRatio, table)
 }
 
+// input回车搜索
+let handleKeyDοwn = (event) => {
+    if (event.keyCode == 13) {
+        getFpList()
+    }
+}
+
 let init = (page = '') => {
     window.addEventListener("unhandledrejection", function (event) {
         loadingHide()
@@ -616,6 +656,11 @@ let init = (page = '') => {
 	}
 
 	if (page === 'performance') {
+        let inputs = fp.search.querySelectorAll('input')
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].addEventListener('keyup', debounce(handleKeyDοwn, 200), false)
+        }
+        
         docInner(fp.header, fp.dic)
         generateRatioTable()
 		getFpList()
