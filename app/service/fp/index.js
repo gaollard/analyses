@@ -59,7 +59,10 @@ class FpService extends Service {
 			city		: opt.city,
 			call_name	: opt.call_name,
 			rs_type		: opt.rs_type,
-			time		: opt.accuracy_time,
+            time		: opt.accuracy_time,
+            file        : {
+                $regex: opt.file
+            },
 			create_time	: {
 				$gte: opt.start_time,
 				$lte: opt.end_time
@@ -142,6 +145,7 @@ class FpService extends Service {
 		const ctx = this.ctx
         let projection = {}
         let params = this.getFindParams(opt)
+        
         let total = await ctx.model[`Fp${appName}`].find(params, projection).count()
         if (!opt.node_type || !opt.delay_arr) return {}
 
@@ -152,7 +156,7 @@ class FpService extends Service {
                 $gte: delayArr[i]
             }
 
-            //console.log(`第${i}次：`, JSON.stringify(params))
+            console.log(`第${i}次：`, JSON.stringify(params))
             let nodeCount = await ctx.model[`Fp${appName}`].find(params, projection).count()
             delayResArr[i] = nodeCount
         }

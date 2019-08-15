@@ -16,7 +16,7 @@ Performance.setConfig({
 	call_name: 'business_env_appliaction'
 })
 
-
+let loadingEl = document.querySelector('.loading')
 let fe = {
 	header: document.querySelector('#fe-header'),
 	el: document.querySelector('#fe-content'),
@@ -64,17 +64,29 @@ let fp = {
     
     // 数据
     data: {
-        networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 15M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
-        delayBaseValue: [500, 500, 500, 500, 500, 500],         // 基准延迟ms
+        // networkType: ['慢3G 500k/S', '快3G 2M/S', '慢4G 4M/S', '快4G 15M/S', '慢WIFI 3M/S', '快WIFI 20M/S'],
+        // delayBaseValue: [500, 500, 500, 500, 500, 500],         // 基准延迟ms
 
-        ready_start: [400, 200, 50, 30, 70, 30],                // 准备新页面时间耗时
-        domain_time: [100, 100, 100, 100, 100, 100],            // DNS查询耗时
-        conn_time: [100, 100, 100, 100, 100, 100],              // TCP连接耗时
-        https_time: [200, 200, 200, 200, 200, 200],             // SSL安全连接耗时
-        req_time: [600, 600, 600, 600, 600, 600],               // request请求耗时
-        dom_tree_time: [2000, 1000, 600, 600, 1000, 500],       // dom解析
-        load_time: [10000, 8000, 5000, 2500, 6000, 2000],       // load事件
-        duration: [1500, 800, 600, 100, 500, 100]               // 资源RTT
+        // ready_start: [400, 200, 50, 30, 70, 30],                // 准备新页面时间耗时
+        // domain_time: [100, 100, 100, 100, 100, 100],            // DNS查询耗时
+        // conn_time: [100, 100, 100, 100, 100, 100],              // TCP连接耗时
+        // https_time: [200, 200, 200, 200, 200, 200],             // SSL安全连接耗时
+        // req_time: [600, 600, 600, 600, 600, 600],               // request请求耗时
+        // dom_tree_time: [2000, 1000, 600, 600, 1000, 500],       // dom解析
+        // load_time: [10000, 8000, 5000, 2500, 6000, 2000],       // load事件
+        // duration: [1500, 800, 600, 100, 500, 100]               // 资源RTT
+
+        networkType: ['3M带宽 ~= 0.375MB/s', '10M带宽 ~= 1.25MB/s', '20M带宽 ~= 2.5MB/s'],
+        delayBaseValue: [500, 500, 500],            // 基准延迟ms
+
+        ready_start: [400, 50, 30],                 // 准备新页面时间耗时
+        domain_time: [100, 100, 100],               // DNS查询耗时
+        conn_time: [100, 100, 100],                 // TCP连接耗时
+        https_time: [200, 200, 200],                // SSL安全连接耗时
+        req_time: [600, 600, 600],                  // request请求耗时
+        dom_tree_time: [2000, 800, 500],            // dom解析
+        load_time: [10000, 3000, 2000],             // load事件
+        duration: [1500, 400, 100]                  // 资源RTT
     },
 
     // ratio比例
@@ -103,6 +115,13 @@ let fp = {
 
 let prevSortEelement = null // 存放上一个排序的dom
 let sortField = ['time', 'format_size', ...Object.keys(node)]	// 排序字段
+
+let loadingShow = () => {
+    loadingEl.style.display = 'block'
+}
+let loadingHide = () => {
+    loadingEl.style.display = ''
+}
 
 let debounce = (fn, delay = 300) => {
 	let timerId
@@ -322,14 +341,16 @@ let createPerformanceReport = async () => {
 
 // 获取资源性能列表
 let getFpList = async (opt) => {
+    loadingShow()
     let query = getFromName('#fp .search .search_name')
     delete query.node_type
     delete query.network_type
 	Object.assign(query, opt)
 	let res = await ajax('performance-report-list', 'POST', query)
 	docInner(fp.el, Object.keys(fp.dic), res, document.querySelector('.total-box'))
-    getFpChart()
-    getFpRatio()
+    await getFpChart()
+    await getFpRatio()
+    loadingHide()
 }
 
 // 获取资源性能-图表
@@ -422,7 +443,6 @@ let getFpRatio = async (opt) => {
     })
 
     docInner(fp.elRatio, Object.keys(tableHeaderRow), [o])
-    console.log([o])
 }
 
 // 打开新增内容层
@@ -462,6 +482,11 @@ let generateRatioTable = (action) => {
 }
 
 let init = (page = '') => {
+
+    window.addEventListener("unhandledrejection", function (event) {
+        loadingHide()
+    });
+
 	let timeDayEnd = document.querySelectorAll('.time_day_end')
 	timeDayEnd.forEach(item => item.value = times().day)
 

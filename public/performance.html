@@ -19,13 +19,14 @@
 				<option value="ZiYou">自有</option>
 				<option value="YouPin">优品</option>
 			</select>
-		</div>
-		<div class="label">上报方: <input name="call_name" type="text" class="search_name" value="" placeholder="上报方名称" /></div>
+        </div>
+        <div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
+        <div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
+        <div class="label">上报方: <input name="call_name" type="text" class="search_name" value="" placeholder="上报方名称" /></div>
+        
 		<div class="label">用户id: <input name="user_id" type="text" class="search_name" value="" placeholder="接入方上报的用户标识" /></div>
 		<div class="label">用户ip: <input name="ip" type="text" class="search_name" value="" placeholder="用户ip" /></div>
 		<div class="label">sign: <input name="sign" type="text" class="search_name" value="" placeholder="用户标识" /></div>
-		<div class="label"><span class="red">*</span>开始时间: <input name="start_time" type="text" class="search_name time_day_start" value="2019-07-20"  placeholder="开始时间:2019-07-20" /></div>
-		<div class="label"><span class="red">*</span>结束时间: <input name="end_time" type="text" class="search_name time_day_end" value="2019-07-31" placeholder="结束时间:2019-07-20" /></div>
 		<div class="label">精确时间: <input name="accuracy_time" type="text" class="search_name" value="" placeholder="2019-01-01 00:00:00" /></div>
 		<div class="label">城市: <input name="city" type="text" class="search_name" value="" placeholder="比如：深圳市" /></div>
 		<div class="label">资源类型: 
@@ -39,6 +40,8 @@
 				<option value="other">other</option>
 			</select>
         </div>
+        <div class="label">资源路径: <input name="file" type="text" class="search_name" value="" placeholder="模糊搜索资源路径" /></div>
+
         <div class="label">节点指标: 
 			<select name="node_type" class="search_name node_type" onchange="generateRatioTable(this)">
 				<option value="ready_start">准备新页面时间耗时</option>
@@ -47,8 +50,8 @@
 				<option value="https_time">SSL安全连接耗时</option>
 				<option value="req_time">request请求耗时</option>
                 <option value="dom_tree_time">dom解析构建耗时</option>
-                <option value="load_time" selected>从开始至load总耗时</option>
-                <option value="duration">RTT</option>
+                <option value="load_time">从开始至load总耗时</option>
+                <option value="duration" selected>RTT</option>
 			</select>
         </div>
         <!-- <div class="label">网络指标: 
@@ -121,6 +124,18 @@
 	<div id="fp-content" class="list-content"></div>
 </div>
 
+<div class="loading">
+    <div class="loadEffect">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+</div>
 <script src="./js/jquery.min.js"></script>
 <script src="./js/echarts.min.js"></script>
 <script src="./js/analyses.js"></script>
