@@ -156,7 +156,8 @@ class FpService extends Service {
                 $gte: delayArr[i]
             }
 
-            console.log(`第${i}次：`, JSON.stringify(params))
+            // {"rs_type":"script","create_time":{"$gte":"2019-08-13","$lte":"2019-08-13"},"duration":{"$gte":1500}}
+            //console.log(`第${i}次：`, JSON.stringify(params))
             let nodeCount = await ctx.model[`Fp${appName}`].find(params, projection).count()
             delayResArr[i] = nodeCount
         }
@@ -165,6 +166,45 @@ class FpService extends Service {
             total,
             delayResArr
         }
+    }
+    
+    // avg平均值查询{小时，分钟}
+    async avg(appName, opt) {
+		const ctx = this.ctx
+        let params = this.getFindParams(opt)
+        let $gte = params.create_time.$gte
+        let $lt = params.create_time.$lte
+        delete params.create_time
+
+        let dimensions = opt.dimensions
+        let len = dimensions.length
+        let avgValues = []
+        for (let i = 0; i <= len; i++) {
+            if (i >= len - 1) continue
+            params.time = {
+                $gte: `${$gte} ${dimensions[i]}`,
+                $lt: `${$lt} ${dimensions[i + 1]}`
+            }
+
+            // {"rs_type":"script","duration":{"$gte":20},"time":{"$gte":"2019-08-13 11:00:00","$lt":"2019-08-13 12:00:00"}}
+            //console.log(`第${i}次：`, JSON.stringify(params))
+            let res = await ctx.model[`Fp${appName}`].aggregate([
+                {
+                    "$match": params
+                },
+                {
+                    "$group": {
+                        "_id": dimensions[i].slice(0, 2),
+                        "value": {
+                            "$avg": "$duration"
+                        }
+                    }
+                }
+            ])
+            avgValues.push(res[0])
+        }
+        
+        return avgValues
 	}
 }
 

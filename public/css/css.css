@@ -1,4 +1,4 @@
-*{margin: 0; padding: 0; color: #333; font-size: 12px; font-family: '微软雅黑', 'Courier New', Courier, monospace;}
+*{margin: 0; padding: 0; color: #333; font-size: 12px; font-family: 'Microsoft YaHei', 'Courier New', Courier, monospace;}
 ul,li{list-style: none}
 
 .red{
@@ -125,7 +125,7 @@ select{
     color: #333;
     border: 1px solid #ddd;
 }
-.cheart {
+.chart {
     margin-top: 20px;
     height: 300px;
 }
@@ -180,10 +180,17 @@ select{
 
 .total-box{
     font-size: 12px;
-    padding: 10px 0;
     text-align: right;
+    font-weight: normal;
+    padding-left: 10px;
 }
 
+.table-title{
+    font-size: 16px;
+    margin-top: 30px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
 
 .loading{
     position: fixed;

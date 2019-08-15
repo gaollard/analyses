@@ -48,6 +48,13 @@ class ErrorReportController extends Controller {
         let ctx = this.ctx
 		let res = await this.query('ratio')
 		ctx.body = res
+    }
+    
+    // 小时，分钟 平均值
+    async avg() {
+        let ctx = this.ctx
+		let res = await this.query('avg')
+		ctx.body = res
 	}
 }
 

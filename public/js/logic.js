@@ -20,7 +20,7 @@ let loadingEl = document.querySelector('.loading')
 let fe = {
 	header: document.querySelector('#fe-header'),
 	el: document.querySelector('#fe-content'),
-	chart: document.querySelector('#fe-cheart'),
+	chart: document.querySelector('#fe-chart'),
 	dic: {
 		call_name: '上报方名称',
 		user_id: '用户id',
@@ -57,7 +57,8 @@ let node = {
 let fp = {
 	header: document.querySelector('#fp-header'),
 	el: document.querySelector('#fp-content'),
-    chart: document.querySelector('#fp-cheart'),
+    chart: document.querySelector('#fp-chart'),
+    chartAvg: document.querySelector('#fp-chart-avg'),
     search: document.querySelector('#search'),
     headerRatio: document.querySelector('#fp-header-ratio'),
     elRatio: document.querySelector('#fp-content-ratio'),
@@ -233,8 +234,13 @@ let docInner = (el, fields, data, totalEl) => {
 }
 
 let renderChart = (el, opt = {}) => {
-	var myChart = echarts.init(el)
-	myChart.setOption(opt, true)
+	let myChart = echarts.init(el)
+    myChart.setOption(opt, true)
+    
+    myChart.on('click', function(params) {
+        if (this._dom.id === 'fp-chart') return
+        getFpAvg(params.dataIndex, 'minute')
+    });
 }
 
 let getFromName = (selectName) => {
@@ -341,6 +347,7 @@ let createPerformanceReport = async () => {
 
 // 获取资源性能列表
 let getFpList = async (opt = {}) => {
+    avgDown = true
     loadingShow()
     let query = getFromName('#fp .search .search_name')
     delete query.node_type
@@ -353,6 +360,7 @@ let getFpList = async (opt = {}) => {
     if (!opt.sort) {
         await getFpChart()
         await getFpRatio()
+        await getFpAvg()
     }
     
     loadingHide()
@@ -389,8 +397,9 @@ let getFpChart = async () => {
 
 	let opt = {
 		title: {
-			text: ""
-		},
+            text: '各个节点耗时总和',
+            subtext: ''
+        },
 		tooltip: {
 			trigger: 'axis',
 			axisPointer : { 
@@ -399,7 +408,7 @@ let getFpChart = async () => {
 		},
 		legend: {
 			type: 'scroll',
-			left: 30,
+			left: 200,
 			right: 30,
 			top: 0,
 			bottom: 30,
@@ -423,7 +432,7 @@ let getFpChart = async () => {
 			}
 		],
 		series: series
-	}
+    }
 	renderChart(fp.chart, opt)
 }
 
@@ -448,6 +457,99 @@ let getFpRatio = async (opt) => {
     })
 
     docInner(fp.elRatio, Object.keys(tableHeaderRow), [o])
+}
+
+// 获取资源性能每天 小时，分钟平均值
+let avgDown = true
+let getFpAvg = async (value, action = 'hour') => {
+    let query = getFromName('#fp .search .search_name')
+    if (query.end_time !== query.start_time) return
+
+    if (!avgDown) return 
+    if (typeof value !== 'undefined') {
+        value = value < 10 ? `0${value}` : value
+    }
+
+    let actions = {
+        hour: [
+            "00:00:00", "01:00:00", "02:00:00", "03:00:00", "04:00:00", "05:00:00", "06:00:00", "07:00:00", "08:00:00", "09:00:00", "10:00:00", 
+            "11:00:00", "12:00:00", "13:00:00", "14:00:00", "15:00:00", "16:00:00", "17:00:00", "18:00:00", "19:00:00", "20:00:00", "21:00:00", 
+            "22:00:00", "23:00:00", "23:59:59"
+        ],
+        minute: [
+            `${value}:00:00`, `${value}:10:00`, `${value}:20:00`, `${value}:30:00`, `${value}:40:00`, `${value}:50:00`, `${value}:60:00`, 
+        ]
+    }
+    query.dimensions = actions[action]
+
+    let res = await ajax('performance-report-avg', 'POST', query)
+    if (typeof res === 'string') {
+		renderChart(fp.chartAvg)
+		return alert(res)
+    }
+    
+    let xAxisData = []
+    let seriesData = []
+    res.map((item, index) => {
+        if (action === 'hour') {
+            xAxisData.push(`${index}点`)
+        } else {
+            xAxisData.push(`${value}点 ${index}0分`)
+        }
+
+        let data = item ? item.value : 0
+        seriesData.push(data)
+    })
+
+	opt = {
+		title: {
+            text: action === 'hour' ? '24小时资源耗时平均值' : `${value}时资源耗时平均值`,
+            subtext: action === 'hour' ? '0-24小时' : ``
+        },
+		tooltip: {
+			trigger: 'axis',
+			axisPointer : { 
+				type : 'shadow'
+			}
+		},
+		legend: {
+            action,
+			type: 'scroll',
+			left: 30,
+			right: 30,
+			top: 0,
+			bottom: 30,
+			data: xAxisData,
+		},
+		grid: {
+			left: '3%',
+			right: '4%',
+			bottom: '3%',
+			containLabel: true
+		},
+		xAxis: [
+			{
+				type : 'category',
+				data : xAxisData
+			}
+		],
+		yAxis: [
+			{
+				type : 'value'
+			}
+		],
+		series: [
+            {
+                type: 'bar',
+                data: seriesData
+            }
+        ]
+    }
+    
+    renderChart(fp.chartAvg, opt)
+    if (value) {
+        avgDown = false
+    }
 }
 
 // 打开新增内容层
@@ -487,7 +589,6 @@ let generateRatioTable = (action) => {
 }
 
 let init = (page = '') => {
-
     window.addEventListener("unhandledrejection", function (event) {
         loadingHide()
     });
@@ -495,8 +596,9 @@ let init = (page = '') => {
 	let timeDayEnd = document.querySelectorAll('.time_day_end')
 	timeDayEnd.forEach(item => item.value = times().day)
 
-	let timeDayStart = document.querySelectorAll('.time_day_start')
-	timeDayStart.forEach(item => item.value = times(Date.now() - 1000 * 60 * 60 * 24 * 7).day)
+    let timeDayStart = document.querySelectorAll('.time_day_start')
+    timeDayStart.forEach(item => item.value = times().day)
+	//timeDayStart.forEach(item => item.value = times(Date.now() - 1000 * 60 * 60 * 24 * 17).day)
 
 	if (page === 'error') {
 		docInner(fe.header, fe.dic)
