@@ -340,16 +340,21 @@ let createPerformanceReport = async () => {
 }
 
 // 获取资源性能列表
-let getFpList = async (opt) => {
+let getFpList = async (opt = {}) => {
     loadingShow()
     let query = getFromName('#fp .search .search_name')
     delete query.node_type
     delete query.network_type
 	Object.assign(query, opt)
 	let res = await ajax('performance-report-list', 'POST', query)
-	docInner(fp.el, Object.keys(fp.dic), res, document.querySelector('.total-box'))
-    await getFpChart()
-    await getFpRatio()
+    docInner(fp.el, Object.keys(fp.dic), res, document.querySelector('.total-box'))
+    
+    // 排序只查列表
+    if (!opt.sort) {
+        await getFpChart()
+        await getFpRatio()
+    }
+    
     loadingHide()
 }
 
