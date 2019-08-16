@@ -486,12 +486,14 @@
     // 解析资源
     var analysisResource = function (timing) {
         var redirectTime        = timing.redirectEnd  - timing.redirectStart;
-        var waitingTime         = timing.domainLookupStart  - timing.fetchStart;
+        var waitingTime         = timing.domainLookupStart  - timing.fetchStart;    // 
         var lookupDomainTime    = timing.domainLookupEnd - timing.domainLookupStart;
         var connectTime         = timing.connectEnd - timing.connectStart;
         var httpsTime           = timing.secureConnectionStart ? (timing.connectEnd - timing.secureConnectionStart) : 0;
 
         var requestTime         = timing.responseStart - timing.requestStart;
+
+        // {只有减去responseStart才是响应时间} 如果responseStart为0，可以减去上一个节点值, 如果与当前值不同, 则就是响应时间, 如果相同继续减去上一个值
         var responseTime        = timing.responseEnd - timing.responseStart;
 
         var size                = timing.transferSize || 0;
@@ -525,7 +527,7 @@
 
         var connectTime         = timing.connectEnd - timing.connectStart;
         var httpsTime           = timing.secureConnectionStart ? (timing.connectEnd - timing.secureConnectionStart) : 0;   // SSL 安全连接耗时
-        var requestTime         = timing.responseStart - timing.requestStart;
+        var requestTime         = timing.responseStart - timing.requestStart;       // ttfb响应第一个字节
         var responseTime        = timing.responseEnd - timing.responseStart;
 
         var initDomTreeTime     = timing.domInteractive - timing.responseEnd;       // 表示完成全部html的解析, 并且dom构建完毕, domLoading-responseEnd表示开始解析第一批收到的HTML文档的字节

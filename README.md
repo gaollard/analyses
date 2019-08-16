@@ -14,6 +14,7 @@
 ### 本地开发
 
 ```bash
+$ 开启mongodb服务
 $ npm i
 $ npm run dev
 $ open http://localhost:8001/

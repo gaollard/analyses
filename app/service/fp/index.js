@@ -197,6 +197,12 @@ class FpService extends Service {
                         "_id": dimensions[i].slice(0, 2),
                         "value": {
                             "$avg": "$duration"
+                        },
+                        "sign": {
+                            "$sum": 1
+                        },
+                        "max":{
+                            "$max": "$duration"
                         }
                     }
                 }

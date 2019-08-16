@@ -512,6 +512,7 @@ let getFpAvg = async (value, action = 'hour') => {
     
     let xAxisData = []
     let seriesData = []
+    let o = {}
     res.map((item, index) => {
         if (action === 'hour') {
             xAxisData.push(`${index}点`)
@@ -519,7 +520,8 @@ let getFpAvg = async (value, action = 'hour') => {
             xAxisData.push(`${value}点 ${index}0分`)
         }
 
-        let data = item ? item.value : 0
+        let data = item ? (item.value).toFixed(2) : 0
+        o[index] = item
         seriesData.push(data)
     })
 
@@ -532,7 +534,15 @@ let getFpAvg = async (value, action = 'hour') => {
 			trigger: 'axis',
 			axisPointer : { 
 				type : 'shadow'
-			}
+            },
+            formatter: function (params = []) {
+                let param = params[0] || {}
+                let res = o[param.dataIndex] || {}
+                return `${param.name}<br/> 
+                        总条数: ${res.sign || 0}<br/> 
+                        最大耗时: ${res.max || 0}ms<br/> 
+                        平均耗时: ${param.value}ms`
+            }
         },
         toolbox: {
             left: "center",
@@ -573,8 +583,20 @@ let getFpAvg = async (value, action = 'hour') => {
 		],
 		series: [
             {
+                name: '耗时',
                 type: 'bar',
-                data: seriesData
+                data: seriesData,
+                markPoint : {
+                    data : [
+                        {type : 'max', name: '最大值'},
+                        {type : 'min', name: '最小值'}
+                    ]
+                },
+                markLine : {
+                    data : [
+                        {type : 'average', name: '平均值'}
+                    ]
+                }
             }
         ]
     }
