@@ -370,8 +370,8 @@ let getFpList = async (opt = {}) => {
     // 排序只查列表
     if (!opt.sort) {
         await getFpChart()
-        await getFpRatio()
         await getFpAvg()
+        await getFpRatio()
     }
     
     loadingHide()
