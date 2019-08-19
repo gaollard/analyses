@@ -520,7 +520,7 @@ let getFpAvg = async (value, action = 'hour') => {
             xAxisData.push(`${value}点 ${index}0分`)
         }
 
-        let data = item ? (item.value).toFixed(2) : 0
+        let data = item ? (item.value || 0).toFixed(2) : 0
         o[index] = item
         seriesData.push(data)
     })
