@@ -27,6 +27,9 @@ $ npm start
 $ npm stop
 ```
 
+### 服务器日志
+- /root/logs/analyses
+
 ### 单元测试
 
 - [egg-bin] 内置了 [mocha], [thunk-mocha], [power-assert], [istanbul] 等框架，让你可以专注于写单元测试，无需理会配套工具。

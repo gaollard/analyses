@@ -15,12 +15,10 @@ let signAdapter = {
 
     // 根据客户端信息生成
     client: function( payload, req ) {
-        let clientIp = req.socket.remoteAddress,
-            ip = clientIp.slice(7),
-            helper = req.helper,
+        let helper = req.helper,
             userAgent = req.headers['user-agent'];
 
-        payload.ip = ip;
+        payload.ip = helper.ip(req);
         payload.userAgent = userAgent;
         payload.type = 'client';
 
