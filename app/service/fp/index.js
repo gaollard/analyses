@@ -107,8 +107,6 @@ class FpService extends Service {
 		let res = await ctx.model[`Fp${appName}`].find(this.getFindParams(opt), projection).sort(sort).limit(Number(opt.page_size))
 		if (!res.length) return {}
 
-        ctx.logger.error(JSON.stringify(res))
-
 		let o = {}
 		res.forEach(item => {
 			let day = item.create_time
