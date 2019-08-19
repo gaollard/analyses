@@ -17,8 +17,9 @@ let signAdapter = {
     client: function( payload, req ) {
         let helper = req.helper,
             userAgent = req.headers['user-agent'];
+        let ip = helper.ip(req)
 
-        payload.ip = helper.ip(req);
+        payload.ip = ip;
         payload.userAgent = userAgent;
         payload.type = 'client';
 
@@ -36,10 +37,9 @@ let signAdapter = {
 
 let tokenValidate = {
     client: function(req, token = {}) {
-        let clientIp = req.socket.remoteAddress,
-            ip = clientIp.slice(7),
-            userAgent = req.headers['user-agent'],
+        let userAgent = req.headers['user-agent'],
             isPass = false;
+        let ip = req.helper.ip(req)
 
         if (!token.ip || !token.userAgent) return isPass;
         if (token.ip !== ip) return isPass;
