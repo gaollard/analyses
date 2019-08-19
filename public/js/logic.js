@@ -3,18 +3,18 @@ if (location.port) {
 	domain = ""
 }
 
-ErrorReport.setConfig({
-	api: `${domain}/api/v1/error-report`,
-	user_id: '',
-	app_name: 'ZiYou',
-	call_name: 'business_env_appliaction'
-})
-Performance.setConfig({
-	api: `${domain}/api/v1/performance-report`,
-	user_id: '',
-	app_name: 'ZiYou',
-	call_name: 'business_env_appliaction'
-})
+// ErrorReport.setConfig({
+// 	api: `${domain}/api/v1/error-report`,
+// 	user_id: '',
+// 	app_name: 'ZiYou',
+// 	call_name: 'business_env_appliaction'
+// })
+// Performance.setConfig({
+// 	api: `${domain}/api/v1/performance-report`,
+// 	user_id: '',
+// 	app_name: 'ZiYou',
+// 	call_name: 'business_env_appliaction'
+// })
 
 let loadingEl = document.querySelector('.loading')
 let fe = {
@@ -40,7 +40,7 @@ let node = {
 	ready_start: '准备新页面时间耗时',
 	redirect_time: 'redirect重定向耗时',
 	waiting_time: '请求等待耗时',
-	unload_event_time: 'unload前文档耗时',
+	//unload_event_time: 'unload前文档耗时',
 
 	domain_time: 'DNS查询耗时',
 	conn_time: 'TCP连接耗时',
@@ -98,7 +98,7 @@ let fp = {
 	dic: Object.assign({}, {
 		//app_name: '应用名',
 		call_name: '上报方名称',
-		user_id: '用户id',
+		//user_id: '用户id',
 		city: '城市',
 		ip: '用户ip',
 		sign: 'sign',
@@ -108,7 +108,7 @@ let fp = {
 	}, node, {
 		format_size: '资源大小K',
 		file: '资源路径',
-        method_type: '加载方式',
+        //method_type: '加载方式',
         url: 'URL'
 		//network_type: '网络情况'
 	})
@@ -246,7 +246,7 @@ let renderChart = (el, opt = {}) => {
 let getFromName = (selectName) => {
 	let list = document.querySelectorAll(selectName)
 	let oVal = {
-		page_size: 300
+		page_size: 150
 	}
 	list.forEach(item => {
 		oVal[item.name] = item.value
